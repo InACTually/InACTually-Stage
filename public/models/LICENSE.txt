@@ -1,0 +1,10 @@
+
+models:
+
+- actionspace.glb
+- input_omnidirectional.glb
+- input_unidirectional.glb
+- output_omnidirectional.glb
+- output_unidirectional.glb
+by Fabian Töpfer (c) 2024
+CC BY 4.0 -> https://creativecommons.org/licenses/by/4.0/deed.de

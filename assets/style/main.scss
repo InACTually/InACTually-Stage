@@ -1,0 +1,181 @@
+/*
+    InACTually
+    > interactive theater for actual acts
+    > this file is part of the "InACTually Stage", a spatial Interface for orchestrating interactive Media 
+
+    Copyright (c) 2023–2025 Fabian Töpfer, Lars Engeln 
+    Copyright (c) 2025 InACTually Community 
+    Licensed under the MIT License. 
+    See LICENSE file in the project root for full license information. 
+
+    This file is created and substantially modified: 2023-2024
+
+    contributors: 
+    Fabian Töpfer - baniaf@uber.space 
+    Lars Engeln - mail@lars-engeln.de
+*/
+
+@import "vars.scss";
+
+* {
+    box-sizing: border-box;
+    transition: all 0.3s ease-out;
+}
+
+html {
+    height: 100vh;
+}
+
+body {
+    font-family: 'Open Sans Condensed', sans-serif;
+    color: $primaryColor;
+    margin: 0px;
+    padding: 0px;
+    height: 100vh;
+    overflow: hidden;
+    font-weight: 400;
+}
+
+.a-enter-vr-button {
+    bottom: 10vh !important;
+    right: 20vw !important;
+}
+
+::-webkit-scrollbar {
+    width: 1px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+    box-shadow: none;
+    border-radius: 1px;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+    background: $borderColor;
+    border-radius: 2px;
+    border: solid 1px $borderColor;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+    background: $borderColor;
+}
+
+h1 {
+    font-size: 26pt;
+    font-weight: 700;
+    margin-top: $margin;
+    margin-bottom: $margin;
+    color: $primaryColor;
+}
+
+h2 {
+    font-size: 20pt;
+    font-weight: 700;
+    color: $primaryColor;
+}
+
+h3 {
+    font-size: 24pt;
+    font-weight: 300;
+    color: $primaryColor;
+}
+
+h4 {
+    font-size: 24pt;
+    font-weight: 700;
+    color: $primaryColor;
+    text-align: center;
+
+}
+
+h6 {
+    font-size: 8pt;
+    font-weight: 700;
+    color: $primaryColor;
+    text-transform: uppercase;
+    text-align: center;
+    cursor: pointer;
+}
+
+
+p,
+a {
+    color: $primaryColor;
+    text-decoration: none;
+    padding: 0 0;
+    margin: 0 0;
+}
+
+input {
+    all: unset;
+}
+
+
+
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    user-select: none; // chrome and Opera
+    -moz-user-select: none; // Firefox
+    -webkit-text-select: none; // IOS Safari
+    -webkit-user-select: none; // Safari
+    margin: 0px;
+    padding: 0px;
+}
+
+.info_panel_wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+
+    .title {
+        width: 100%;
+        margin-bottom: 20px;
+    }
+
+}
+
+.info_panel_container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    max-width: 300px;
+    flex-wrap: wrap;
+    margin-top: 10px;
+
+    .button {
+        border-bottom-color: $borderColor;
+
+        &:hover {
+            border-bottom-color: $borderColorHighlight;
+        }
+    }
+
+    h6 {
+        width: 80px;
+    }
+
+    .input {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        padding: 0px;
+
+        p {
+            font-size: 15px;
+            padding: 5px;
+            margin-top: 0px;
+        }
+    }
+}

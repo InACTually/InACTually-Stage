@@ -1,0 +1,42 @@
+/*
+    InACTually
+    > interactive theater for actual acts
+    > this file is part of the "InACTually Stage", a spatial Interface for orchestrating interactive Media 
+
+    Copyright (c) 2023–2025 Fabian Töpfer, Lars Engeln 
+    Copyright (c) 2025 InACTually Community 
+    Licensed under the MIT License. 
+    See LICENSE file in the project root for full license information. 
+
+    This file is created and substantially modified: 2023-2024
+
+    contributors: 
+    Fabian Töpfer - baniaf@uber.space 
+    Lars Engeln - mail@lars-engeln.de
+*/
+
+$maxWidth: 1800px;
+
+$margin: 7px;
+$padding: 5px;
+
+$borderRadius: 10px;
+$borderWidth: 2px;
+
+$backgroundColor: var(--background-color);
+$semiTransparentColor: var(--semi-background-color);
+$primaryColor: var(--primary-color);
+$primaryColorHighlight: var(--primary-color-highlight);
+$secondaryColor: var(--secondary-color);
+$borderColor: var(--border-color);
+$borderColorHighlight: var(--border-color-highlight);
+
+$whiteColor: #e1e1e1;
+$blackColor: #2a2a2a;
+$stageColor: #222222;
+
+$outputColor: #0066ff;
+$inputColor: #FF0015;
+$actionColor: #FFD900;
+
+$highlightColor: #5500FF;

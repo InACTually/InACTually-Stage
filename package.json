@@ -1,0 +1,45 @@
+{
+    "name": "InACTually Stage",
+    "private": true,
+    "description": "The Stage is InACTually's Interface, that should be able to orchestrate a show or media installations spatially.",
+    "version": "1.0.0",
+    "main": ".output/electron/main.js",
+    "license": "see license in ./LICENSE",
+    "scripts": {
+        "build": "nuxt build",
+        "dev": "nuxt dev",
+        "devs": " nuxt dev --host --https --ssl-cert ./certs/inactually.crt --ssl-key ./certs/inactuallyCA.key",
+        "generate": "nuxt generate",
+        "preview": "nuxt preview",
+        "postinstall": "nuxt prepare",
+        "compile-electron": "tsc -p ./electron --outDir .output/electron",
+        "dev:electron": "set NODE_ENV=development& concurrently --kill-others \"nuxt dev\" \" tsc-watch -p ./electron --outDir .output/electron --onSuccess run.electron\"",
+        "build:electron": "yarn generate && yarn compile-electron && node buildConfig.js"
+    },
+    "devDependencies": {
+        "concurrently": "^8.2.2",
+        "electron": "^28.1.2",
+        "electron-builder": "^24.9.1",
+        "nuxt": "^3.9.0",
+        "nuxt-primevue": "^3.0.0",
+        "tsc-watch": "^6.0.4",
+        "typescript": "^5.3.3",
+        "vue": "^3.4.6",
+        "vue-router": "^4.2.5",
+        "wait-on": "^7.2.0"
+    },
+    "dependencies": {
+        "@svgdotjs/svg.js": "^3.2.0",
+        "@tweenjs/tween.js": "^23.1.1",
+        "@types/express": "^4.17.21",
+        "@types/three": "^0.160.0",
+        "express": "^4.18.2",
+        "primeicons": "^7.0.0",
+        "primevue": "^3.52.0",
+        "sass": "^1.69.7",
+        "three": "^0.160.0",
+        "three-bvh-csg": "^0.0.16",
+        "three-mesh-bvh": "^0.8.3"
+    },
+    "packageManager": "yarn@4.3.0"
+}
