@@ -7,10 +7,9 @@ export default defineNuxtConfig({
       viewport: 'width=device-width, initial-scale=1',
       title: 'InActually',
       meta: [
-        { hid: 'description', name: 'description', content: process.env.npm_package_description || '' }
+        { name: 'description', content: process.env.npm_package_description || '' }
       ],
       link: [{
-        hid: 'icon',
         rel: 'icon',
         type: 'image/x-icon',
         href: 'inACTually_icon.ico'
@@ -38,4 +37,5 @@ export default defineNuxtConfig({
     //   cert: 'localhost.pem'
     // }
   },
+  compatibilityDate: '2025-08-13'
 })
