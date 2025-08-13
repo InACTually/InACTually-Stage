@@ -138,7 +138,7 @@ function updateLookAt() {
 
 </script>
 <style lang="scss" scoped>
-@import "@/assets/style/vars.scss";
+@use "@/assets/style/vars.scss";
 
 .color_row {
     width: 100%;

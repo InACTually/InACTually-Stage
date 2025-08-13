@@ -59,7 +59,7 @@ function showInteractionPanel():boolean{
 
 </script>
 <style lang="scss" scoped>
-@import "@/assets/style/vars.scss";
+@use "@/assets/style/vars.scss";
 
     .gui_wrapper{
         width:100%;
@@ -67,12 +67,12 @@ function showInteractionPanel():boolean{
         display:flex;
         justify-content: center;
         align-items:center;
-        background-color: $backgroundColor;
+        background-color: vars.$backgroundColor;
         .gui_content{
             height: 100%;
             max-width:3000px;
             width:100%;
-            background-color:$backgroundColor;
+            background-color:vars.$backgroundColor;
             display: grid;  
             overflow: hidden;
             grid-template-columns: 20% 60% 20%;

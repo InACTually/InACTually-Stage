@@ -67,7 +67,7 @@ onMounted(()=>{
   
 </script>
 <style scoped lang="scss">
-@import "@/assets/style/vars.scss";
+@use "@/assets/style/vars.scss";
 .catgeory{
     font-size:8pt;
 }
@@ -80,11 +80,11 @@ onMounted(()=>{
     flex-direction: row;
 
     h6{
-        padding:$padding;
+        padding:vars.$padding;
         color:grey;
 
         &.selected{
-            color:$primaryColor;
+            color:vars.$primaryColor;
         }
     }
 }

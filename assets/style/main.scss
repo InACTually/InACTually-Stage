@@ -15,7 +15,7 @@
     Lars Engeln - mail@lars-engeln.de
 */
 
-@import "vars.scss";
+@use "vars.scss";
 
 * {
     box-sizing: border-box;
@@ -28,7 +28,7 @@ html {
 
 body {
     font-family: 'Open Sans Condensed', sans-serif;
-    color: $primaryColor;
+    color: vars.$primaryColor;
     margin: 0px;
     padding: 0px;
     height: 100vh;
@@ -53,40 +53,40 @@ body {
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
-    background: $borderColor;
+    background: vars.$borderColor;
     border-radius: 2px;
-    border: solid 1px $borderColor;
+    border: solid 1px vars.$borderColor;
 }
 
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
-    background: $borderColor;
+    background: vars.$borderColor;
 }
 
 h1 {
     font-size: 26pt;
     font-weight: 700;
-    margin-top: $margin;
-    margin-bottom: $margin;
-    color: $primaryColor;
+    margin-top: vars.$margin;
+    margin-bottom: vars.$margin;
+    color: vars.$primaryColor;
 }
 
 h2 {
     font-size: 20pt;
     font-weight: 700;
-    color: $primaryColor;
+    color: vars.$primaryColor;
 }
 
 h3 {
     font-size: 24pt;
     font-weight: 300;
-    color: $primaryColor;
+    color: vars.$primaryColor;
 }
 
 h4 {
     font-size: 24pt;
     font-weight: 700;
-    color: $primaryColor;
+    color: vars.$primaryColor;
     text-align: center;
 
 }
@@ -94,7 +94,7 @@ h4 {
 h6 {
     font-size: 8pt;
     font-weight: 700;
-    color: $primaryColor;
+    color: vars.$primaryColor;
     text-transform: uppercase;
     text-align: center;
     cursor: pointer;
@@ -103,7 +103,7 @@ h6 {
 
 p,
 a {
-    color: $primaryColor;
+    color: vars.$primaryColor;
     text-decoration: none;
     padding: 0 0;
     margin: 0 0;
@@ -155,10 +155,10 @@ h6 {
     margin-top: 10px;
 
     .button {
-        border-bottom-color: $borderColor;
+        border-bottom-color: vars.$borderColor;
 
         &:hover {
-            border-bottom-color: $borderColorHighlight;
+            border-bottom-color: vars.$borderColorHighlight;
         }
     }
 

@@ -115,7 +115,7 @@
      
     </script>
     <style scoped lang="scss">
-    @import "@/assets/style/vars.scss";
+    @use "@/assets/style/vars.scss";
     .networksim_panel{
      
         width:350px;

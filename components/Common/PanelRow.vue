@@ -24,7 +24,7 @@
 
 </script>
 <style lang="scss" scoped>
-@import "@/assets/style/vars.scss";
+@use "@/assets/style/vars.scss";
 
 .panel_row_wrapper{
     width:100%;
@@ -32,11 +32,11 @@
     flex-direction:row;
     justify-content:space-between;
     align-items:center;
-    padding:$padding;
-    border-bottom:solid $borderWidth rgba(0,0,0,0);
+    padding:vars.$padding;
+    border-bottom:solid vars.$borderWidth rgba(0,0,0,0);
     background-color: none;
     &:hover{
-        //border-bottom:solid $borderWidth $borderColorHighlight;
+        //border-bottom:solid vars.$borderWidth vars.$borderColorHighlight;
 
     }   
 

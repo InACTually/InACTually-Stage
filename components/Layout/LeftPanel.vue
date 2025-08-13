@@ -13,6 +13,7 @@
 
 	contributors:
 	Fabian Töpfer - baniaf@uber.space
+    Lars Engeln - mail@lars-engeln.de
 -->
 
 <template>
@@ -71,7 +72,7 @@ function getGuiStateName(guiState:GUIState):string{
 
 </script>
 <style lang="scss" scoped>
-@import "@/assets/style/vars.scss";
+@use "@/assets/style/vars.scss";
 .left_panel_wrapper{
     width:100%;
     
@@ -85,7 +86,7 @@ function getGuiStateName(guiState:GUIState):string{
         padding-bottom:50px;
 
         .dynamic_panel{
-            margin:$margin;
+            margin:vars.$margin;
         }
     }
 }

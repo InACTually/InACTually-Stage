@@ -9,10 +9,11 @@
 	Licensed under the MIT License.
 	See LICENSE file in the project root for full license information.
 
-	This file is created and substantially modified: 2024
+	This file is created and substantially modified: 2024-2025
 
 	contributors:
 	Fabian Töpfer - baniaf@uber.space
+    Lars Engeln - mail@lars-engeln.de
 -->
 
 <template>
@@ -40,7 +41,7 @@ function setRoomRegistrationMode(){
  
 </script>
 <style lang="scss" scoped>
-@import "@/assets/style/vars.scss";
+@use "@/assets/style/vars.scss";
   
 .menu_wrapper{
     position:absolute;
@@ -49,16 +50,16 @@ function setRoomRegistrationMode(){
     left:50%;
     transform: translateX(-50%);
     min-height:300px;
-    background-color:$semiTransparentColor; 
+    background-color:vars.$semiTransparentColor; 
     backdrop-filter: blur(10px);
     z-index:9;
-    border:solid $borderWidth $borderColor;
+    border:solid vars.$borderWidth vars.$borderColor;
     border-radius:5px;
 
     .menu_content{
         width:100%;
         height:100%;
-        margin:$padding;
+        margin:vars.$padding;
         display:flex;
         flex-direction: column;
         justify-content:space-between;
@@ -68,7 +69,7 @@ function setRoomRegistrationMode(){
 
             h6{
                 margin-top:10px;
-                border-bottom:solid $borderWidth $borderColor;
+                border-bottom:solid vars.$borderWidth vars.$borderColor;
             }
         }
     }

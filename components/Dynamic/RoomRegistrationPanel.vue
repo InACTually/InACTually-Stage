@@ -9,7 +9,7 @@
 	Licensed under the MIT License.
 	See LICENSE file in the project root for full license information.
 
-	This file is created and substantially modified: 2024
+	This file is created and substantially modified: 2024-2025
 
 	contributors:
 	Fabian Töpfer - baniaf@uber.space
@@ -38,7 +38,7 @@ let {guiState} = useGUIState();
 let expand = ref<boolean>(true);
  
 let refLength = ref<number>(1);
-let interactionManager = useInteractionManager();
+//let interactionManager = useInteractionManager();
 
 
 watch(guiState,()=>{
@@ -49,13 +49,13 @@ watch(guiState,()=>{
 })
 
 watch(refLength,()=>{   
-    interactionManager.setRoomRegistrationRefLength(refLength.value);
+    //interactionManager.setRoomRegistrationRefLength(refLength.value);
 
 })
  
 </script>
 <style  lang="scss">
-@import "@/assets/style/vars.scss";
+@use "@/assets/style/vars.scss";
 .room_model_wrapper{
     width:100%;
     display:flex;

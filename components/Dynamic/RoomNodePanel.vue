@@ -100,5 +100,5 @@ watch(guiState, () => {
 
 </script>
 <style scoped lang="scss">
-@import "@/assets/style/vars.scss";
+@use "@/assets/style/vars.scss";
 </style>

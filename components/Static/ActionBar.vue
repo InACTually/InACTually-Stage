@@ -13,6 +13,7 @@
 
 	contributors:
 	Fabian Töpfer - baniaf@uber.space
+    Lars Engeln - mail@lars-engeln.de
 -->
 
 <template>
@@ -61,11 +62,11 @@ function isSelected(state:string){
 
 </script>
 <style lang="scss" scoped>
-@import "@/assets/style/vars.scss";
+@use "@/assets/style/vars.scss";
 .action_bar_wrapper{
       
-    background-color:$semiTransparentColor; 
-    border:solid $borderWidth $borderColor;
+    background-color:vars.$semiTransparentColor; 
+    border:solid vars.$borderWidth vars.$borderColor;
     border-radius: 10px;
     box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
     min-height:30px;
@@ -81,9 +82,9 @@ function isSelected(state:string){
     align-items:center;
  
       .action_bar_content{
-                padding:$padding;
-                margin-left:$margin;
-                margin-right:$margin;
+                padding:vars.$padding;
+                margin-left:vars.$margin;
+                margin-right:vars.$margin;
                 display:flex;
                 flex-direction: row;
                 justify-content:center;
@@ -91,21 +92,21 @@ function isSelected(state:string){
                 height:100%;
 
             .interaction_modes{
-                margin-right:$margin;
+                margin-right:vars.$margin;
                 display:flex;
                 flex-direction:row;
                 
 
                 h6{
-                    padding:$padding;      
-                    border-bottom:solid $borderWidth $semiTransparentColor;
+                    padding:vars.$padding;      
+                    border-bottom:solid vars.$borderWidth vars.$semiTransparentColor;
 
                     &.selected{
-                        border-bottom:solid $borderWidth $borderColor;
+                        border-bottom:solid vars.$borderWidth vars.$borderColor;
                     }
 
                     &:hover{
-                        border-bottom:solid $borderWidth $borderColorHighlight;
+                        border-bottom:solid vars.$borderWidth vars.$borderColorHighlight;
 
                     }
 

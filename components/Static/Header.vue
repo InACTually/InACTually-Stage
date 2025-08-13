@@ -82,7 +82,7 @@ watch(lightTheme,()=>{
 </script>
 
 <style lang="scss" scoped>
-@import "@/assets/style/vars.scss";
+@use "@/assets/style/vars.scss";
  
 .header_wrapper {
  
@@ -90,13 +90,13 @@ watch(lightTheme,()=>{
     
     .header_content{
        display:flex;
-       padding:$padding;
+       padding:vars.$padding;
        flex-direction: row;
        justify-content: space-between;
        align-items:center;
         h6{
-            padding:$padding;
-            margin-right: $padding;
+            padding:vars.$padding;
+            margin-right: vars.$padding;
         }
 
         .actions{

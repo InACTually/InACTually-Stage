@@ -35,12 +35,12 @@ let expand = defineModel();
 
 </script>
 <style scoped lang="scss">
-@import "@/assets/style/vars.scss";
+@use "@/assets/style/vars.scss";
 .dynamic_panel_wrapper{
     width:100%;
     max-width: 350px;
-    background-color:$semiTransparentColor; 
-    border:solid $borderWidth $borderColor;
+    background-color:vars.$semiTransparentColor; 
+    border:solid vars.$borderWidth vars.$borderColor;
     border-radius: 10px;
     box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
     backdrop-filter: blur(10px);
@@ -51,7 +51,7 @@ let expand = defineModel();
     justify-content: center;
     align-items:center;
     transition:all 0.3s ease-out;
-    padding:$padding;
+    padding:vars.$padding;
  
 
     .dynamic_panel_title{
@@ -61,15 +61,15 @@ let expand = defineModel();
         width:100%;
         align-items:center;
         min-height:30px;
-        padding:$padding;
+        padding:vars.$padding;
         .indicator{
             height:10px;
             width:10px;
-            border:solid $borderWidth $borderColor;
+            border:solid vars.$borderWidth vars.$borderColor;
             border-radius:50%;
 
             &.filled{
-                background-color: $borderColor;
+                background-color: vars.$borderColor;
             }
         }
     }

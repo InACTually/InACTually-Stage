@@ -109,7 +109,7 @@ watch(guiState,()=>{
 
 </script>
 <style  lang="scss">
-@import "@/assets/style/vars.scss";
+@use "@/assets/style/vars.scss";
 .body_model_wrapper{
     width:100%;
     height:600px;

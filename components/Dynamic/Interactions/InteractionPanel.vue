@@ -142,7 +142,7 @@ function setReaction(reaction:{type:ReactionType,name:string}){
 
 </script>
 <style scoped lang="scss">
-@import "@/assets/style/vars.scss";
+@use "@/assets/style/vars.scss";
 #interactionpanel{
     position:absolute;
     z-index: 10;
@@ -192,7 +192,7 @@ function setReaction(reaction:{type:ReactionType,name:string}){
     }
 
         h6{
-            padding:$padding;
+            padding:vars.$padding;
         }
     }
 

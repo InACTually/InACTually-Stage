@@ -13,6 +13,7 @@
 
 	contributors:
 	Fabian Töpfer - baniaf@uber.space
+    Lars Engeln - mail@lars-engeln.de
 -->
 
 <template>
@@ -37,7 +38,7 @@ const props = defineProps({
   
 </script>
 <style lang="scss" scoped>
-@import "@/assets/style/vars.scss";
+@use "@/assets/style/vars.scss";
 .right_panel_wrapper{
     width:100%;
     
@@ -51,7 +52,7 @@ const props = defineProps({
         padding-bottom:50px;
 
         .dynamic_panel{
-            margin:$margin;
+            margin:vars.$margin;
         }
     }
 }

@@ -49,7 +49,7 @@ watch(guiState,()=>{
     
 </script>
 <style scoped lang="scss">
-@import "@/assets/style/vars.scss";
+@use "@/assets/style/vars.scss";
 .color_picker_wrapper{
     width:100%;
     display:flex;

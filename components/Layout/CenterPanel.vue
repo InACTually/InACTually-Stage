@@ -9,10 +9,11 @@
 	Licensed under the MIT License.
 	See LICENSE file in the project root for full license information.
 
-	This file is created and substantially modified: 2024
+	This file is created and substantially modified: 2024-2025
 
 	contributors:
 	Fabian Töpfer - baniaf@uber.space
+	Lars Engeln - mail@lars-engeln.de
 -->
 
 <template>
@@ -42,6 +43,6 @@ onMounted(()=>{
 
 </script>
 <style lang="scss" scoped>
-@import "@/assets/style/vars.scss";
+@use "@/assets/style/vars.scss";
 
 </style>

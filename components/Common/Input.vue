@@ -36,25 +36,25 @@ function onInput(){
  
 </script>
 <style lang="scss" scoped>
-@import "@/assets/style/vars.scss";
+@use "@/assets/style/vars.scss";
 
 
 
 input{
  
     border:none;
-    border-bottom:solid $borderWidth $borderColor;
+    border-bottom:solid vars.$borderWidth vars.$borderColor;
     transition:all 0.3s ease-out;
     width:100%;
     font-size:8pt;
     font-weight:700;
-    color:$primaryColor;
+    color:vars.$primaryColor;
     text-transform: uppercase;
     text-align:center;  
     cursor: pointer;
  
     &:focus{
-        border-bottom:solid $borderWidth $borderColorHighlight;
+        border-bottom:solid vars.$borderWidth vars.$borderColorHighlight;
     }
 }
 </style>

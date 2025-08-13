@@ -198,7 +198,7 @@ function updateRotation(){
 
 </script>
 <style scoped lang="scss">
-@import "@/assets/style/vars.scss";
+@use "@/assets/style/vars.scss";
 
 .input_row{
     display:flex;

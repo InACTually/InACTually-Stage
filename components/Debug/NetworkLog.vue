@@ -76,7 +76,7 @@ onMounted(()=>{console.log("[NetworkLog] network log created")})
  
 </script>
 <style scoped lang="scss">
-@import "@/assets/style/vars.scss";
+@use "@/assets/style/vars.scss";
 .networkLog_panel{
  
     width:350px;
@@ -98,7 +98,7 @@ onMounted(()=>{console.log("[NetworkLog] network log created")})
             height:200px;
             overflow-y: auto;
             h6{
-                margin:$margin;
+                margin:vars.$margin;
 
             }
             p{

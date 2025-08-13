@@ -13,6 +13,7 @@
 
 	contributors:
 	Fabian Töpfer - baniaf@uber.space
+    Lars Engeln - mail@lars-engeln.de
 -->
 
 <template>
@@ -26,15 +27,15 @@
 
 </script>
 <style lang="scss" scoped>
-@import "@/assets/style/vars.scss";
+@use "@/assets/style/vars.scss";
 .bottom_panel_wrapper{
       
-      background-color:$semiTransparentColor;//rgba(255,255,255,1.0  );
+      background-color:vars.$semiTransparentColor;//rgba(255,255,255,1.0  );
       backdrop-filter: blur(10px);
       .bottom_panel_content{
-                border-top:$borderWidth solid $borderColor;
-                margin-left:$margin;
-                margin-right:$margin;
+                border-top:vars.$borderWidth solid vars.$borderColor;
+                margin-left:vars.$margin;
+                margin-right:vars.$margin;
                 display:flex;
                 flex-direction: row;
                 justify-content:left;

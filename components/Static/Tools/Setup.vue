@@ -50,7 +50,7 @@ function setTransformControlsMode(){
 
 </script>
 <style lang="scss" scoped>
-@import "@/assets/style/vars.scss";
+@use "@/assets/style/vars.scss";
 
 .tools_setup_wrapper{
     .tools_setup_content{
