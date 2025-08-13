@@ -28,6 +28,7 @@ import KinectManager from "./RoomNodes/Kinect/KinectManager";
 import DMXManager from "./RoomNodes/DMX/DMXManager";
 import { ProjectionPos } from "./View3D/ProjectionManager";
 import BodyManager from "./RoomNodes/Body/BodyManager";
+import ProjectorManager from "./RoomNodes/Projector/ProjectorManager";
 
 export interface IRoomNodeManagers {
 	getRoomNodeMgrByRoomNodeType(type: RoomNodeType): RoomNodeManagerBase | undefined
@@ -44,6 +45,7 @@ export default class RoomManager {
 	private m_kinectManager = {} as KinectManager;
 	private m_dmxManager = {} as DMXManager;
 	private m_bodyManager = {} as BodyManager;
+	private m_projectorManager = {} as ProjectorManager;
 
 	public stage = {} as Stage;
 
@@ -72,12 +74,14 @@ export default class RoomManager {
 		this.m_kinectManager = new KinectManager(this.m_publisher, this, this.stage.roomModelManager);
 		this.m_dmxManager = new DMXManager(this.m_publisher, this, this.stage.roomModelManager);
 		this.m_bodyManager = new BodyManager(this.m_publisher, this, this.stage.roomModelManager);
+		this.m_projectorManager = new ProjectorManager(this.m_publisher, this, this.stage.roomModelManager);
 
 		this.m_roomNodeManagers.push(this.m_actionSpaceManager);
 		this.m_roomNodeManagers.push(this.m_cameraManager);
 		this.m_roomNodeManagers.push(this.m_kinectManager);
 		this.m_roomNodeManagers.push(this.m_dmxManager);
 		this.m_roomNodeManagers.push(this.m_bodyManager);
+		this.m_roomNodeManagers.push(this.m_projectorManager);
 
 		this.m_roomNodeManagers.forEach((rnm) => {
 			this.m_container3D.add(rnm.getContainer3D());
@@ -207,5 +211,8 @@ export default class RoomManager {
 
 		if (json.actionSpaceManager)
 			this.m_actionSpaceManager.fromJson(json.actionSpaceManager);
+
+		if (json.projectorManager)
+			this.m_projectorManager.fromJson(json.projectorManager);
 	}
 }
