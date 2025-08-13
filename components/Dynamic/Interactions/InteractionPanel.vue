@@ -192,7 +192,7 @@ function setReaction(reaction:{type:ReactionType,name:string}){
     }
 
         h6{
-            padding:vars.$padding;
+            padding: vars.$padding;
         }
     }
 
