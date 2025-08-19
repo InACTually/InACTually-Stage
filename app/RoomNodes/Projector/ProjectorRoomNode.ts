@@ -20,10 +20,13 @@ import { RoomNodeType, fromRoomNodeType } from "../RoomNodeRegistry";
 import * as THREE from "three";
 import loadModel from "~/app/Utils/ModelLoader";
 import type IRoomNodePublisher from "~/app/Network/IRoomNodePublisher";
+import Parameter from "../Utils/Parameter";
 
 export default class ProjectorRoomNode extends RoomNodeBase {
 	private m_deviceName: string | undefined;
 	private m_captureRange: THREE.Mesh = {} as THREE.Mesh;
+
+	private m_resolution = new Parameter<{ x: number, y: number}>("resolution", { x: 1920, y: 1080 }, { x: 1, y: 1 }, {x: 10000, y: 10000 }, this.publishParams.bind(this));
 
 	constructor(publisher: IRoomNodePublisher, onLoadCb: { (roomNode: RoomNodeBase): void }, uid?: string, position?: THREE.Vector3, orientation?: THREE.Quaternion) {
 		super("projector", publisher, onLoadCb, uid, position, orientation);
@@ -88,6 +91,15 @@ export default class ProjectorRoomNode extends RoomNodeBase {
 	public getCaptureRange(): THREE.Mesh {
 		return this.m_captureRange;
 	}
+
+	public getResolution(): Ref<{ x: number, y: number }> {
+		return this.m_resolution.value;
+	}
+
+	public setResolution(resolution: {x: number, y: number}): void {
+		this.m_resolution.value = resolution;
+	}
+
 	public override onDragStart() {
 		this.showCaptureRange(true);
 	}
@@ -105,6 +117,7 @@ export default class ProjectorRoomNode extends RoomNodeBase {
 
 	public override toParams(): any {
 		let params = {} as any;
+		params.resolution = this.m_resolution.value;
 
 		return params;
 	}
@@ -112,5 +125,8 @@ export default class ProjectorRoomNode extends RoomNodeBase {
 	public override fromParams(params: any): void {
 		if (params.deviceName !== undefined)
 			this.m_deviceName = params.deviceName + "";
+
+		if (params.resolution !== undefined)
+			this.setResolution(params.resolution);
 	}
 }
