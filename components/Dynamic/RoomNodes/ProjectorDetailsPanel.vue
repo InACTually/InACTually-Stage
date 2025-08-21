@@ -1,8 +1,22 @@
 <template>
-    <CommonPanelRow class="resolution_row">
+    <CommonPanelRow class="input_row">
         <h6>Resolution</h6>
         <CommonInput class="input" v-model="resolution.x" labelText="" type="number" @onUserChange="updateResolution()" />
         <CommonInput class="input" v-model="resolution.y" labelText="" type="number" @onUserChange="updateResolution()" />
+    </CommonPanelRow>
+    <CommonPanelRow class="input_row">
+        <h6>Focal Length / Pixel</h6>
+        <CommonInput class="input" v-model="focalLengthPixel.x" labelText="" type="number" @onUserChange="updateFocalLengthPixel()" />
+        <CommonInput class="input" v-model="focalLengthPixel.y" labelText="" type="number" @onUserChange="updateFocalLengthPixel()" />
+    </CommonPanelRow>
+    <CommonPanelRow class="input_row">
+        <h6>Skew</h6>
+        <CommonInput class="input" v-model="skew" labelText="" type="number" @onUserChange="updateSkew()" />
+    </CommonPanelRow>
+    <CommonPanelRow class="input_row">
+        <h6>Principal Point</h6>
+        <CommonInput class="input" v-model="principalPoint.x" labelText="" type="number" @onUserChange="updatePrincipalPoint()" />
+        <CommonInput class="input" v-model="principalPoint.y" labelText="" type="number" @onUserChange="updatePrincipalPoint()" />
     </CommonPanelRow>
 </template>
 <script lang="ts" setup>
@@ -17,6 +31,9 @@ const props = defineProps({
 });
 
 let resolution = ref<{ x: number, y: number }>({ x: 1920, y: 1080 });
+let focalLengthPixel = ref<{ x: number, y: number }>({ x: 1, y: 1 });
+let skew = ref<number>(0);
+let principalPoint = ref<{ x: number, y: number }>({ x: 0, y: 0 });
 
 const rawSelectedRoomNode = computed(() => {
     return toRaw(props.selectedRoomNode);
@@ -25,19 +42,37 @@ const rawSelectedRoomNode = computed(() => {
 onMounted(() => {
     watch(rawSelectedRoomNode, () => {
         if (rawSelectedRoomNode.value) {
+            // Whatch Node & issue UI change
             watch(rawSelectedRoomNode.value.getResolution(), () => {
                 setResolution();
+            }, { immediate: true })
+            watch(rawSelectedRoomNode.value.getFocalLengthPixel(), () => {
+                setFocalLengthPixel();
+            }, { immediate: true })
+            watch(rawSelectedRoomNode.value.getSkew(), () => {
+                setSkew();
+            }, { immediate: true })
+            watch(rawSelectedRoomNode.value.getPrincipalPoint(), () => {
+                setPrincipalPoint();
             }, { immediate: true })
 
         }
     }, { immediate: true })
 })
 
+/*************          Resolution          *********/
+// From Node To UI
 function setResolution() {
     const res = rawSelectedRoomNode.value.getResolution().value;
     resolution.value = { x: res.x, y: res.y };
 }
 
+//From UI to Node
+function updateResolution() {
+    rawSelectedRoomNode.value.setResolution({ x: resolution.value.x, y: resolution.value.y });
+}
+
+// Validate UI changes
 watch(() => resolution.value.x, (newValue: any, oldValue: any) => {
     if (isNaN(Number(newValue))) {
         newValue = oldValue;
@@ -51,22 +86,90 @@ watch(() => resolution.value.y, (newValue: any, oldValue: any) => {
     resolution.value.y = Number(newValue.toFixed(0));
 })
 
-function updateResolution() {
-    rawSelectedRoomNode.value.setResolution({ x: resolution.value.x, y: resolution.value.y });
+//*************          Focal Length Pixel          *********/
+// From Node To UI
+function setFocalLengthPixel() {
+    const tmp = rawSelectedRoomNode.value.getFocalLengthPixel().value;
+    focalLengthPixel.value = { x: tmp.x, y: tmp.y };
 }
 
+//From UI to Node
+function updateFocalLengthPixel() {
+    rawSelectedRoomNode.value.setFocalLengthPixel({ x: focalLengthPixel.value.x, y: focalLengthPixel.value.y });
+}
+
+// Validate UI changes
+watch(() => focalLengthPixel.value.x, (newValue: any, oldValue: any) => {
+    if (isNaN(Number(newValue))) {
+        newValue = oldValue;
+    }
+    focalLengthPixel.value.x = Number(newValue.toFixed(2));
+})
+watch(() => focalLengthPixel.value.y, (newValue: any, oldValue: any) => {
+    if (isNaN(Number(newValue))) {
+        newValue = oldValue;
+    }
+    focalLengthPixel.value.y = Number(newValue.toFixed(2));
+})
+
+//*************          Skew          *********/
+// From Node To UI
+function setSkew() {
+    skew.value = rawSelectedRoomNode.value.getSkew().value;
+}
+
+//From UI to Node
+function updateSkew() {
+    rawSelectedRoomNode.value.setSkew(skew.value);
+}
+
+// Validate UI changes
+watch(skew, (newValue: number, oldValue: number) => {
+    if (isNaN(Number(newValue))) {
+        newValue = oldValue;
+    }
+    skew.value = Number(newValue.toFixed(2));
+})
+
+//*************          Principal Point          *********/
+// From Node To UI
+function setPrincipalPoint() {
+    const tmp = rawSelectedRoomNode.value.getPrincipalPoint().value;
+    principalPoint.value = { x: tmp.x, y: tmp.y };
+}
+
+//From UI to Node
+function updatePrincipalPoint() {
+    rawSelectedRoomNode.value.setPrincipalPoint({ x: principalPoint.value.x, y: principalPoint.value.y });
+}
+
+// Validate UI changes
+watch(() => principalPoint.value.x, (newValue: any, oldValue: any) => {
+    if (isNaN(Number(newValue))) {
+        newValue = oldValue;
+    }
+    principalPoint.value.x = Number(newValue.toFixed(2));
+})
+watch(() => principalPoint.value.y, (newValue: any, oldValue: any) => {
+    if (isNaN(Number(newValue))) {
+        newValue = oldValue;
+    }
+    principalPoint.value.y = Number(newValue.toFixed(2));
+})
+
 </script>
-<style lang="scss" scoped>
+<style scoped lang="scss">
 @use "@/assets/style/vars.scss";
-.resolution_row {
-    width: 100%;
-    display: flex;
+
+.input_row{
+    display:flex;
     flex-direction: row;
-    justify-content: space-between;
-    align-items: space-between;
-    
-    .input {
-        margin: 3px;
+    justify-content:center;
+    align-items:center;
+
+    .input{
+        margin:3px;
     }
 }
+
 </style>

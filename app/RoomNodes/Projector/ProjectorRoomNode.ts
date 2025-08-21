@@ -23,10 +23,12 @@ import type IRoomNodePublisher from "~/app/Network/IRoomNodePublisher";
 import Parameter from "../Utils/Parameter";
 
 export default class ProjectorRoomNode extends RoomNodeBase {
-	private m_deviceName: string | undefined;
-	private m_captureRange: THREE.Mesh = {} as THREE.Mesh;
+	private m_frustum: THREE.Mesh = {} as THREE.Mesh;
 
 	private m_resolution = new Parameter<{ x: number, y: number}>("resolution", { x: 1920, y: 1080 }, { x: 1, y: 1 }, {x: 10000, y: 10000 }, this.publishParams.bind(this));
+	private m_focalLengthPixel = new Parameter<{ x: number, y: number}>("focalLengthPixel", { x: 800, y: 800 }, { x: 0, y: 0 }, {x: 1000000, y: 1000000 }, this.publishParams.bind(this));
+	private m_skew = new Parameter<number>("skew", 0, -1000000, 1000000, this.publishParams.bind(this));
+	private m_principalPoint = new Parameter<{ x: number, y: number}>("principalPoint", { x: 960, y: 540 }, { x: 0, y: 0 }, {x: 10000, y: 10000 }, this.publishParams.bind(this));
 
 	constructor(publisher: IRoomNodePublisher, onLoadCb: { (roomNode: RoomNodeBase): void }, uid?: string, position?: THREE.Vector3, orientation?: THREE.Quaternion) {
 		super("projector", publisher, onLoadCb, uid, position, orientation);
@@ -65,11 +67,11 @@ export default class ProjectorRoomNode extends RoomNodeBase {
 
 			pyramide.applyQuaternion(quaternionX.multiply(quaternionZ));
 
-			this.m_captureRange = pyramide;
-			this.m_captureRange.visible = true;
-			this.m_captureRange.layers.set(2);
+			this.m_frustum = pyramide;
+			this.m_frustum.visible = true;
+			this.m_frustum.layers.set(2);
 
-			this.getRawObject3D().add(this.m_captureRange);
+			this.getRawObject3D().add(this.m_frustum);
 
 			onLoadCb(this);
 		});
@@ -79,17 +81,8 @@ export default class ProjectorRoomNode extends RoomNodeBase {
 	public override update(): void {
 	}
 
-
-	public getDeviceName(): string | undefined {
-		return this.m_deviceName;
-	}
-
-	public setDeviceName(name: string): void {
-		this.m_deviceName = name;
-	}
-
-	public getCaptureRange(): THREE.Mesh {
-		return this.m_captureRange;
+	public getFrustum(): THREE.Mesh {
+		return this.m_frustum;
 	}
 
 	public getResolution(): Ref<{ x: number, y: number }> {
@@ -100,33 +93,63 @@ export default class ProjectorRoomNode extends RoomNodeBase {
 		this.m_resolution.value = resolution;
 	}
 
-	public override onDragStart() {
-		this.showCaptureRange(true);
-	}
-	public override onDragEnd() {
-		this.showCaptureRange(false);
+	public getFocalLengthPixel(): Ref<{ x: number, y: number }> {
+		return this.m_focalLengthPixel.value;
 	}
 
-	public showCaptureRange(value: boolean) {
+	public setFocalLengthPixel(focalLength: {x: number, y: number}): void {
+		this.m_focalLengthPixel.value = focalLength;
+	}
+
+	public getSkew(): Ref<number> {
+		return this.m_skew.value;
+	}
+
+	public setSkew(skew: number): void {
+		this.m_skew.value = skew;
+	}
+
+	public getPrincipalPoint(): Ref<{ x: number, y: number }> {
+		return this.m_principalPoint.value;
+	}
+
+	public setPrincipalPoint(principalPoint: {x: number, y: number}): void {
+		this.m_principalPoint.value = principalPoint;
+	}
+
+	public override onDragStart() {
+		this.showFrustum(true);
+	}
+	public override onDragEnd() {
+		this.showFrustum(false);
+	}
+
+	public showFrustum(value: boolean) {
 		if (value)
-			this.m_captureRange.layers.set(0);
+			this.m_frustum.layers.set(0);
 		else
-			this.m_captureRange.layers.set(2);
+			this.m_frustum.layers.set(2);
 	}
 
 
 	public override toParams(): any {
 		let params = {} as any;
 		params.resolution = this.m_resolution.value;
+		params.focalLengthPixel = this.m_focalLengthPixel.value;
+		params.skew = this.m_skew.value;
+		params.principalPoint = this.m_principalPoint.value;
 
 		return params;
 	}
 
 	public override fromParams(params: any): void {
-		if (params.deviceName !== undefined)
-			this.m_deviceName = params.deviceName + "";
-
 		if (params.resolution !== undefined)
 			this.setResolution(params.resolution);
+		if (params.focalLengthPixel !== undefined)
+			this.setFocalLengthPixel(params.focalLengthPixel);
+		if (params.skew !== undefined)
+			this.setSkew(params.skew);
+		if (params.principalPoint !== undefined)
+			this.setPrincipalPoint(params.principalPoint);
 	}
 }
