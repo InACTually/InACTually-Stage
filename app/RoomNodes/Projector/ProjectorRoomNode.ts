@@ -26,6 +26,7 @@ export default class ProjectorRoomNode extends RoomNodeBase {
 	private m_frustum: THREE.Mesh = {} as THREE.Mesh;
 
 	private m_resolution = new Parameter<{ x: number, y: number}>("resolution", { x: 1920, y: 1080 }, { x: 1, y: 1 }, {x: 10000, y: 10000 }, this.publishParams.bind(this));
+	private m_isCalibrating = new Parameter<boolean>("isCalibrating", false, false, true, this.publishParams.bind(this));
 	private m_focalLengthPixel = new Parameter<{ x: number, y: number}>("focalLengthPixel", { x: 800, y: 800 }, { x: 0, y: 0 }, {x: 1000000, y: 1000000 }, this.publishParams.bind(this));
 	private m_skew = new Parameter<number>("skew", 0, -1000000, 1000000, this.publishParams.bind(this));
 	private m_principalPoint = new Parameter<{ x: number, y: number}>("principalPoint", { x: 960, y: 540 }, { x: 0, y: 0 }, {x: 10000, y: 10000 }, this.publishParams.bind(this));
@@ -93,6 +94,14 @@ export default class ProjectorRoomNode extends RoomNodeBase {
 		this.m_resolution.value = resolution;
 	}
 
+	public getIsCalibrating(): Ref<boolean> {
+		return this.m_isCalibrating.value;
+	}
+
+	public setIsCalibrating(isCalibrating: boolean): void {
+		this.m_isCalibrating.value = isCalibrating;
+	}
+
 	public getFocalLengthPixel(): Ref<{ x: number, y: number }> {
 		return this.m_focalLengthPixel.value;
 	}
@@ -151,5 +160,7 @@ export default class ProjectorRoomNode extends RoomNodeBase {
 			this.setSkew(params.skew);
 		if (params.principalPoint !== undefined)
 			this.setPrincipalPoint(params.principalPoint);
+		if (params.isCalibrating !== undefined)
+			this.setIsCalibrating(params.isCalibrating);
 	}
 }

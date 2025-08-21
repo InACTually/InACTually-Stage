@@ -4,6 +4,10 @@
         <CommonInput class="input" v-model="resolution.x" labelText="" type="number" @onUserChange="updateResolution()" />
         <CommonInput class="input" v-model="resolution.y" labelText="" type="number" @onUserChange="updateResolution()" />
     </CommonPanelRow>
+        <CommonPanelRow class="input_row" @click="updateIsCalibrating()">
+        <h6>Listen for Correspondences     </h6>
+        <h6>{{isCalibrating}}</h6>
+    </CommonPanelRow>
     <CommonPanelRow class="input_row">
         <h6>Focal Length / Pixel</h6>
         <CommonInput class="input" v-model="focalLengthPixel.x" labelText="" type="number" @onUserChange="updateFocalLengthPixel()" />
@@ -20,6 +24,7 @@
     </CommonPanelRow>
 </template>
 <script lang="ts" setup>
+import { update } from "@tweenjs/tween.js";
 import * as THREE from "three"
 import ProjectorRoomNode from "~/app/RoomNodes/Projector/ProjectorRoomNode";
 
@@ -31,6 +36,7 @@ const props = defineProps({
 });
 
 let resolution = ref<{ x: number, y: number }>({ x: 1920, y: 1080 });
+let isCalibrating = ref<boolean>(false);
 let focalLengthPixel = ref<{ x: number, y: number }>({ x: 1, y: 1 });
 let skew = ref<number>(0);
 let principalPoint = ref<{ x: number, y: number }>({ x: 0, y: 0 });
@@ -45,6 +51,9 @@ onMounted(() => {
             // Whatch Node & issue UI change
             watch(rawSelectedRoomNode.value.getResolution(), () => {
                 setResolution();
+            }, { immediate: true })
+            watch(rawSelectedRoomNode.value.getIsCalibrating(), () => {
+                setIsCalibrating();
             }, { immediate: true })
             watch(rawSelectedRoomNode.value.getFocalLengthPixel(), () => {
                 setFocalLengthPixel();
@@ -86,6 +95,17 @@ watch(() => resolution.value.y, (newValue: any, oldValue: any) => {
     resolution.value.y = Number(newValue.toFixed(0));
 })
 
+/*************          IsCalibrating          *********/
+// From Node To UI
+function setIsCalibrating() {
+    isCalibrating.value = rawSelectedRoomNode.value.getIsCalibrating().value;
+}
+
+//From UI to Node
+function updateIsCalibrating() {
+    isCalibrating.value = !isCalibrating.value;
+    rawSelectedRoomNode.value.setIsCalibrating(isCalibrating.value);
+}
 //*************          Focal Length Pixel          *********/
 // From Node To UI
 function setFocalLengthPixel() {
