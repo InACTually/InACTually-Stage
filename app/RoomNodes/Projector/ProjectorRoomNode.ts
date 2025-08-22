@@ -140,6 +140,9 @@ export default class ProjectorRoomNode extends RoomNodeBase {
 			this.m_frustum.layers.set(2);
 	}
 
+	public publishObjectPoint(point: {x: number, y: number, z: number}): void {
+		this.publishParams({ ["objectPoint"]: point })
+	}
 
 	public override toParams(): any {
 		let params = {} as any;
