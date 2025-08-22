@@ -4,7 +4,7 @@
         <CommonInput class="input" v-model="resolution.x" labelText="" type="number" @onUserChange="updateResolution()" />
         <CommonInput class="input" v-model="resolution.y" labelText="" type="number" @onUserChange="updateResolution()" />
     </CommonPanelRow>
-        <CommonPanelRow class="input_row" @click="updateIsCalibrating()">
+    <CommonPanelRow class="input_row" @click="updateIsCalibrating()">
         <h6>Listen for Correspondences     </h6>
         <h6>{{isCalibrating}}</h6>
     </CommonPanelRow>
@@ -21,6 +21,15 @@
         <h6>Principal Point</h6>
         <CommonInput class="input" v-model="principalPoint.x" labelText="" type="number" @onUserChange="updatePrincipalPoint()" />
         <CommonInput class="input" v-model="principalPoint.y" labelText="" type="number" @onUserChange="updatePrincipalPoint()" />
+    </CommonPanelRow>
+    <CommonPanelRow class="input_row">
+        <h6>Test Object Point</h6>
+        <CommonInput class="input" v-model="testObjectPoint.x" labelText="" type="number" />
+        <CommonInput class="input" v-model="testObjectPoint.y" labelText="" type="number" />
+        <CommonInput class="input" v-model="testObjectPoint.z" labelText="" type="number" />
+    </CommonPanelRow>
+    <CommonPanelRow class="input_row" @click="publishTestObjectPoint()">
+        <h6>Publish Test Object Point</h6>
     </CommonPanelRow>
 </template>
 <script lang="ts" setup>
@@ -40,6 +49,7 @@ let isCalibrating = ref<boolean>(false);
 let focalLengthPixel = ref<{ x: number, y: number }>({ x: 1, y: 1 });
 let skew = ref<number>(0);
 let principalPoint = ref<{ x: number, y: number }>({ x: 0, y: 0 });
+let testObjectPoint = ref<{ x: number, y: number, z: number }>({ x: 0, y: 0 , z: 0 });
 
 const rawSelectedRoomNode = computed(() => {
     return toRaw(props.selectedRoomNode);
@@ -175,6 +185,32 @@ watch(() => principalPoint.value.y, (newValue: any, oldValue: any) => {
         newValue = oldValue;
     }
     principalPoint.value.y = Number(newValue.toFixed(2));
+})
+
+/*************          Test Object Point          *********/
+function publishTestObjectPoint() {
+    rawSelectedRoomNode.value.publishObjectPoint(testObjectPoint.value);
+}
+
+watch(() => testObjectPoint.value.x, (newValue: any, oldValue: any) => {
+    if (isNaN(Number(newValue))) {
+        newValue = oldValue;
+    }
+    testObjectPoint.value.x = Number(newValue.toFixed(2));
+})
+
+watch(() => testObjectPoint.value.y, (newValue: any, oldValue: any) => {
+    if (isNaN(Number(newValue))) {
+        newValue = oldValue;
+    }
+    testObjectPoint.value.y = Number(newValue.toFixed(2));
+})
+
+watch(() => testObjectPoint.value.z, (newValue: any, oldValue: any) => {
+    if (isNaN(Number(newValue))) {
+        newValue = oldValue;
+    }
+    testObjectPoint.value.z = Number(newValue.toFixed(2));
 })
 
 </script>
