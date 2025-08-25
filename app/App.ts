@@ -32,15 +32,19 @@ export default class App {
 
 	constructor(canvas: HTMLElement) {
 		this.middleware.setup(this.roomManager);
+		
+		this.UI3D = new UI3D(canvas, this.roomManager);
 
 		this.roomManager.draw(canvas, () => {
 			this.roomManager.update();
 			this.interactionManager.update();
+			this.UI3D.update();
 		});
 
 		this.canvas = canvas;
 
-		this.UI3D = new UI3D(canvas, this.roomManager);
+		this.UI3D.setup();
+
 
 		this.middleware.connect(9001);
 

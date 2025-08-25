@@ -48,17 +48,18 @@ export default class UI3D {
 		this.m_canvas = canvas;
 		this.m_roomManager = roomManager;
 		this.m_roomManager.deselectSelectedRoomNode = () => { this.setSelectedRoomNode(undefined) }
-		this.m_xr = this.m_roomManager.stage.getXR()!;
-		this.setup();
+		//this.setup();
 	}
-
+	
 	public getSelectedRoomNode() {
 		return this.selectedRoomNode;
 	}
-
+	
 	public setup() {
+		this.m_xr = this.m_roomManager.stage.getXR()!;
 		this.setupListeners()
 
+		let yo = this.m_roomManager.stage.getDOMElement();
 		this.orbitControls = new OrbitControls(this.m_roomManager.stage.getCamera().value, this.m_roomManager.stage.getDOMElement());
 		this.m_prevOrbitDistance = this.orbitControls.getDistance();
 
@@ -341,6 +342,7 @@ export default class UI3D {
 		const handModelFactory = new XRHandModelFactory();
 		let hand = this.m_xr.getHand(index);
 		hand.add(handModelFactory.createHandModel(hand, "mesh"));
+		hand.name = "hand" + index;
 
 		this.m_roomManager.stage.getScene().add(hand);
 		return hand;
@@ -352,6 +354,10 @@ export default class UI3D {
 
 		this.m_roomManager.stage.getScene().add(controllerGrip);
 		return controllerGrip;
+	}
+
+	public update(){
+		console.log("update from UI3D")
 	}
 
 }
