@@ -23,7 +23,8 @@ import type IRoomNodePublisher from "~/app/Network/IRoomNodePublisher";
 import Parameter from "../Utils/Parameter";
 
 export default class ProjectorRoomNode extends RoomNodeBase {
-	private m_frustum: THREE.Mesh = {} as THREE.Mesh;
+	private m_frustum: THREE.LineSegments = {} as THREE.LineSegments;
+	private m_frustumGeom: THREE.BufferGeometry = {} as THREE.BufferGeometry;
 
 	private m_resolution = new Parameter<{ x: number, y: number}>("resolution", { x: 1920, y: 1080 }, { x: 1, y: 1 }, {x: 10000, y: 10000 }, this.publishParams.bind(this));
 	private m_isCalibrating = new Parameter<boolean>("isCalibrating", false, false, true, this.publishParams.bind(this));
@@ -54,21 +55,21 @@ export default class ProjectorRoomNode extends RoomNodeBase {
 			this.setupObject3DWatcher();
 
 			//const geometry = new THREE.SphereGeometry(5, 16, 16, 0, Math.PI);
-			const geometry = new THREE.CylinderGeometry(0, 5, 5, 4, 1);
-			const material = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.1, side: THREE.DoubleSide });
-			const pyramide = new THREE.Mesh(geometry, material);
+			this.m_frustumGeom = new THREE.BufferGeometry();
+			this.calculateFrustum();
+			const material = new THREE.LineBasicMaterial({color: 0x9370DB, linewidth: 3});
+			const frustum = new THREE.LineSegments(this.m_frustumGeom, material);
 
-			pyramide.position.z = 2.5;
-			const quaternionX = new THREE.Quaternion();
-			quaternionX.setFromAxisAngle(new THREE.Vector3(1, 0, 0), -Math.PI / 2);
+			// const quaternionX = new THREE.Quaternion();
+			// quaternionX.setFromAxisAngle(new THREE.Vector3(1, 0, 0), -Math.PI / 2);
 
-			const quaternionZ = new THREE.Quaternion();
-			quaternionZ.setFromAxisAngle(new THREE.Vector3(0, 1, 0), -Math.PI / 4);
+			// const quaternionZ = new THREE.Quaternion();
+			// quaternionZ.setFromAxisAngle(new THREE.Vector3(0, 1, 0), -Math.PI / 4);
 
 
-			pyramide.applyQuaternion(quaternionX.multiply(quaternionZ));
+			// frustum.applyQuaternion(quaternionX.multiply(quaternionZ));
 
-			this.m_frustum = pyramide;
+			this.m_frustum = frustum;
 			this.m_frustum.visible = true;
 			this.m_frustum.layers.set(2);
 
@@ -82,7 +83,7 @@ export default class ProjectorRoomNode extends RoomNodeBase {
 	public override update(): void {
 	}
 
-	public getFrustum(): THREE.Mesh {
+	public getFrustum(): THREE.LineSegments {
 		return this.m_frustum;
 	}
 
@@ -92,6 +93,7 @@ export default class ProjectorRoomNode extends RoomNodeBase {
 
 	public setResolution(resolution: {x: number, y: number}): void {
 		this.m_resolution.value = resolution;
+		this.calculateFrustum();
 	}
 
 	public getIsCalibrating(): Ref<boolean> {
@@ -108,6 +110,7 @@ export default class ProjectorRoomNode extends RoomNodeBase {
 
 	public setFocalLengthPixel(focalLength: {x: number, y: number}): void {
 		this.m_focalLengthPixel.value = focalLength;
+		this.calculateFrustum();
 	}
 
 	public getSkew(): Ref<number> {
@@ -116,6 +119,7 @@ export default class ProjectorRoomNode extends RoomNodeBase {
 
 	public setSkew(skew: number): void {
 		this.m_skew.value = skew;
+		this.calculateFrustum();
 	}
 
 	public getPrincipalPoint(): Ref<{ x: number, y: number }> {
@@ -124,6 +128,38 @@ export default class ProjectorRoomNode extends RoomNodeBase {
 
 	public setPrincipalPoint(principalPoint: {x: number, y: number}): void {
 		this.m_principalPoint.value = principalPoint;
+		this.calculateFrustum();
+	}
+
+	private calculateFrustum() {
+		const z = 5;
+		const points: THREE.Vector3[] = [];
+		for (let x = 0; x < 2; x++) {
+			for (let y = 0; y < 2; y++) {
+				points.push(new THREE.Vector3(0));
+				//poitn at z=5
+				let farPoint = new THREE.Vector3(0, 0, 5)
+				farPoint.x = (this.m_resolution.value.value.x * x - this.m_principalPoint.value.value.x) 
+						/ this.m_focalLengthPixel.value.value.x 
+						* z
+
+				farPoint.y = (this.m_resolution.value.value.y * y - this.m_principalPoint.value.value.y) 
+						/ this.m_focalLengthPixel.value.value.y 
+						* z
+
+				points.push(farPoint);
+			}
+		}
+
+		const farPoints = [ points[1], points[3], points[7], points[5] ];
+
+		// Connect far-plane edges
+		for (let i = 0; i < 4; i++) {
+			const next = (i + 1) % 4;
+			points.push(farPoints[i], farPoints[next]);
+		}
+
+		this.m_frustumGeom.setFromPoints(points);
 	}
 
 	public override onDragStart() {
