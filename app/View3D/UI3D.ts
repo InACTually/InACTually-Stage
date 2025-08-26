@@ -341,7 +341,7 @@ export default class UI3D {
 		this.m_roomManager.stage.getScene().add(sphere1);
 
 		this.m_hand0Gestures.addDebugMeshes(sphere0, sphere1, material);
-		this.m_hand0Gestures.activateCloseGesture(this.handClosed, () => {})
+		this.m_hand0Gestures.activateCloseGesture(this.handClosed.bind(this), () => {})
 
 		let leftController = this.createController(0);
 		let rightController = this.createController(1);
@@ -384,6 +384,13 @@ export default class UI3D {
 
 	private handClosed(position: THREE.Vector3){
 		
+		const projectorManager = this.m_roomManager.getRoomNodeMgrByRoomNodeType(RoomNodeType.RNT_PROJECTOR)
+		if (projectorManager) {
+			for (const projector of projectorManager.getRoomNodes()) {
+				if (projector instanceof ProjectorRoomNode)
+					projector.publishObjectPoint({x: position.x, y: position.y, z: position.z})
+			}
+		}
 	}
 
 }
