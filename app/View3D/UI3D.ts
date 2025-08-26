@@ -342,6 +342,7 @@ export default class UI3D {
 
 		this.m_hand0Gestures.addDebugMeshes(sphere0, sphere1, material);
 		this.m_hand0Gestures.activateCloseGesture(this.handClosed.bind(this), () => {})
+		this.m_hand1Gestures.activateCloseGesture(this.handClosed.bind(this), () => {})
 
 		let leftController = this.createController(0);
 		let rightController = this.createController(1);
