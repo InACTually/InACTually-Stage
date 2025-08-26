@@ -25,6 +25,7 @@ import { RoomNodeType } from "../RoomNodes/RoomNodeRegistry";
 import { XRControllerModelFactory } from 'three/addons/webxr/XRControllerModelFactory.js';
 import { XRHandModelFactory } from 'three/addons/webxr/XRHandModelFactory.js';
 import ProjectorRoomNode from "../RoomNodes/Projector/ProjectorRoomNode";
+import XRHandGestures from "./XRHandGestures";
 
 export default class UI3D {
 
@@ -45,11 +46,8 @@ export default class UI3D {
 	private m_dragPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), -0.5);
 	private m_template3DObjectContainer = new THREE.Object3D();
 
-	private m_hand0 = {} as THREE.XRHandSpace;
-	private m_hand1 = {} as THREE.XRHandSpace;
-
-	private m_tipDebugSphere = {} as THREE.Object3D;
-	private m_wristDebugSphere = {} as THREE.Object3D;
+	private m_hand0Gestures = {} as XRHandGestures;
+	private m_hand1Gestures = {} as XRHandGestures;
 
 	constructor(canvas: HTMLElement, roomManager: RoomManager) {
 		this.m_canvas = canvas;
@@ -327,8 +325,23 @@ export default class UI3D {
 		let leftControlRay = this.createControlRay(0);
 		let rightControlRay = this.createControlRay(1);
 
-		this.m_hand0 = this.createHand(0);
-		this.m_hand1 = this.createHand(1);
+		let hand0 = this.createHand(0);
+		let hand1 = this.createHand(1);
+		this.m_hand0Gestures = new XRHandGestures(hand0);
+		this.m_hand1Gestures = new XRHandGestures(hand1);
+
+		let material = new THREE.MeshStandardMaterial({ color: 0x0077ff });
+
+		let geometry = new THREE.SphereGeometry(0.01, 32, 32); // radius, widthSegments, heightSegments
+		let sphere0 = new THREE.Mesh(geometry, material);
+		this.m_roomManager.stage.getScene().add(sphere0);
+
+		geometry = new THREE.SphereGeometry(0.025, 32, 32);
+		let sphere1 = new THREE.Mesh(geometry, material);
+		this.m_roomManager.stage.getScene().add(sphere1);
+
+		this.m_hand0Gestures.addDebugMeshes(sphere0, sphere1, material);
+		this.m_hand0Gestures.activateCloseGesture(this.handClosed, () => {})
 
 		let leftController = this.createController(0);
 		let rightController = this.createController(1);
@@ -351,13 +364,6 @@ export default class UI3D {
 
 		//Add debug geometry
 		//hand.add(handModelFactory.createHandModel(hand, "mesh"));
-		let geometry = new THREE.SphereGeometry(0.02, 32, 32); // radius, widthSegments, heightSegments
-		const material = new THREE.MeshStandardMaterial({ color: 0x0077ff });
-		this.m_tipDebugSphere = new THREE.Mesh(geometry, material);
-		this.m_roomManager.stage.getScene().add(this.m_tipDebugSphere);
-		geometry = new THREE.SphereGeometry(0.05, 32, 32);
-		this.m_wristDebugSphere = new THREE.Mesh(geometry, material);
-		this.m_roomManager.stage.getScene().add(this.m_wristDebugSphere);
 
 		this.m_roomManager.stage.getScene().add(hand);
 		return hand;
@@ -372,28 +378,12 @@ export default class UI3D {
 	}
 
 	public update(){
-		let wrist = this.m_hand1.joints["wrist"];
-		let middleFingerTip = this.m_hand1.joints["middle-finger-tip"];
-		console.log(wrist);
+		this.m_hand0Gestures.update();
+		this.m_hand1Gestures.update();
+	}
 
-		if(wrist && middleFingerTip) {
-
-			let wristPosition = wrist.getWorldPosition(new THREE.Vector3());
-			let middleFingerTipPosition = middleFingerTip.getWorldPosition(new THREE.Vector3());
-
-			this.m_tipDebugSphere.position.set(middleFingerTipPosition.x, middleFingerTipPosition.y, middleFingerTipPosition.z);
-			this.m_wristDebugSphere.position.set(wristPosition.x, wristPosition.y, wristPosition.z);
-			
-
-			let distance = wristPosition.distanceTo(middleFingerTipPosition);
-			// console.log(distance);
-			// const currentRoomNode = this.getSelectedRoomNode();
-			// if (currentRoomNode instanceof ProjectorRoomNode) {
-			// 	currentRoomNode.publishObjectPoint({ x: wristPosition.x, y: wristPosition.y, z: wristPosition.z })
-			// }
-			// if (distance < 0.1) {
-			// }
-		}
+	private handClosed(position: THREE.Vector3){
+		
 	}
 
 }
