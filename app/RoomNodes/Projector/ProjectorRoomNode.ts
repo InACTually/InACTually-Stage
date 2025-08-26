@@ -24,7 +24,7 @@ import Parameter from "../Utils/Parameter";
 
 export default class ProjectorRoomNode extends RoomNodeBase {
 	private m_frustum: THREE.LineSegments = {} as THREE.LineSegments;
-	private m_frustumGeom: THREE.BufferGeometry = {} as THREE.BufferGeometry;
+	private m_frustumGeom: THREE.BufferGeometry = new THREE.BufferGeometry();;
 
 	private m_resolution = new Parameter<{ x: number, y: number}>("resolution", { x: 1920, y: 1080 }, { x: 1, y: 1 }, {x: 10000, y: 10000 }, this.publishParams.bind(this));
 	private m_isCalibrating = new Parameter<boolean>("isCalibrating", false, false, true, this.publishParams.bind(this));
@@ -55,7 +55,6 @@ export default class ProjectorRoomNode extends RoomNodeBase {
 			this.setupObject3DWatcher();
 
 			//const geometry = new THREE.SphereGeometry(5, 16, 16, 0, Math.PI);
-			this.m_frustumGeom = new THREE.BufferGeometry();
 			this.calculateFrustum();
 			const material = new THREE.LineBasicMaterial({color: 0x9370DB, linewidth: 3});
 			const frustum = new THREE.LineSegments(this.m_frustumGeom, material);
