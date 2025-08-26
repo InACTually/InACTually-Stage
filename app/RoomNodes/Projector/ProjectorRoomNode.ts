@@ -141,7 +141,8 @@ export default class ProjectorRoomNode extends RoomNodeBase {
 	}
 
 	public publishObjectPoint(point: {x: number, y: number, z: number}): void {
-		this.publishParams({ ["objectPoint"]: point })
+		if(this.m_isCalibrating)
+			this.publishParams({ ["objectPoint"]: point })
 	}
 
 	public override toParams(): any {
