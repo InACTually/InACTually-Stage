@@ -59,6 +59,9 @@ export default class ProjectorRoomNode extends RoomNodeBase {
 			const material = new THREE.LineBasicMaterial({color: 0x9370DB, linewidth: 3});
 			const frustum = new THREE.LineSegments(this.m_frustumGeom, material);
 
+			const axesHelper = new THREE.AxesHelper(2);
+			this.getRawObject3D().add(axesHelper);
+
 			// const quaternionX = new THREE.Quaternion();
 			// quaternionX.setFromAxisAngle(new THREE.Vector3(1, 0, 0), -Math.PI / 2);
 
