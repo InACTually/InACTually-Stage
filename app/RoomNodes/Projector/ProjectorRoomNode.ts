@@ -142,7 +142,7 @@ export default class ProjectorRoomNode extends RoomNodeBase {
 						/ this.m_focalLengthPixel.value.value.x 
 						* z
 
-				farPoint.y = (this.m_resolution.value.value.y * y - this.m_principalPoint.value.value.y) 
+				farPoint.y = -(this.m_resolution.value.value.y * y - this.m_principalPoint.value.value.y) 
 						/ this.m_focalLengthPixel.value.value.y 
 						* z
 
