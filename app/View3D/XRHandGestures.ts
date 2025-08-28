@@ -53,31 +53,33 @@ export default class XRHandGestures {
             return;
 
         let wrist = this.m_hand.joints["wrist"];
-		let middleFingerTip = this.m_hand.joints["middle-finger-tip"];
+		let middleFingerDistal = this.m_hand.joints["middle-finger-phalanx-distal"];
+		let ringFingerDistal = this.m_hand.joints["ring-finger-phalanx-distal"];
 
-		if(!wrist || !middleFingerTip) 
+		if(!wrist || !middleFingerDistal || !ringFingerDistal) 
             return;
 
         let wristPosition = wrist.getWorldPosition(new THREE.Vector3());
-        let middleFingerTipPosition = middleFingerTip.getWorldPosition(new THREE.Vector3());
+        let middleFingerDistalPosition = middleFingerDistal.getWorldPosition(new THREE.Vector3());
+        let ringFingerDistalPosition = ringFingerDistal.getWorldPosition(new THREE.Vector3());
         
-        let distance = wristPosition.distanceTo(middleFingerTipPosition);
+        let distance = (wristPosition.distanceTo(middleFingerDistalPosition) + wristPosition.distanceTo(ringFingerDistalPosition)) / 2;
         if(distance <= XRHandGestures.closeThreshold) {
             if (!this.m_closeGestureActive){
                 this.m_closeGestureActive = true;
-                this.m_closeGestureTriggered(middleFingerTipPosition);
+                this.m_closeGestureTriggered(middleFingerDistalPosition.lerp(ringFingerDistalPosition, 0.5));
             }
         }
         else if (distance >= XRHandGestures.openThreshold) {
             if (this.m_closeGestureActive){
                 this.m_closeGestureActive = false;
-                this.m_closeGestureReleased(middleFingerTipPosition);
+                this.m_closeGestureReleased(middleFingerDistalPosition.lerp(ringFingerDistalPosition, 0.5));
             }
         }
 
         //show Debug meshes
         if (this.m_middleTipDebugMesh && this.m_wristDebugMesh && this.m_debugMaterial) {
-            this.m_middleTipDebugMesh.position.set(middleFingerTipPosition.x, middleFingerTipPosition.y, middleFingerTipPosition.z);
+            this.m_middleTipDebugMesh.position.set(middleFingerDistalPosition.x, middleFingerDistalPosition.y, middleFingerDistalPosition.z);
             this.m_wristDebugMesh.position.set(wristPosition.x, wristPosition.y, wristPosition.z);
             if(distance <= XRHandGestures.closeThreshold) {
                 this.m_debugMaterial.color.set(new THREE.Color(0,1,0));
