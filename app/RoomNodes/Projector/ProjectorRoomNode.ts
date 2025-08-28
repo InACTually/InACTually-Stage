@@ -73,7 +73,7 @@ export default class ProjectorRoomNode extends RoomNodeBase {
 
 			this.m_frustum = frustum;
 			this.m_frustum.visible = true;
-			this.m_frustum.layers.set(2);
+			//this.m_frustum.layers.set(2);
 
 			this.getRawObject3D().add(this.m_frustum);
 
@@ -134,20 +134,20 @@ export default class ProjectorRoomNode extends RoomNodeBase {
 	}
 
 	private calculateFrustum() {
-		const z = 5;
+		const z = -5;
 		const points: THREE.Vector3[] = [];
 		for (let x = 0; x < 2; x++) {
 			for (let y = 0; y < 2; y++) {
 				points.push(new THREE.Vector3(0));
 				//poitn at z=5
-				let farPoint = new THREE.Vector3(0, 0, 5)
+				let farPoint = new THREE.Vector3(0, 0, z)
 				farPoint.x = (this.m_resolution.value.value.x * x - this.m_principalPoint.value.value.x) 
 						/ this.m_focalLengthPixel.value.value.x 
-						* z
+						* -z
 
-				farPoint.y = -(this.m_resolution.value.value.y * y - this.m_principalPoint.value.value.y) 
+				farPoint.y = (this.m_resolution.value.value.y * y - this.m_principalPoint.value.value.y) 
 						/ this.m_focalLengthPixel.value.value.y 
-						* z
+						* z //negated (twice)
 
 				points.push(farPoint);
 			}
