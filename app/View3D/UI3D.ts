@@ -388,8 +388,16 @@ export default class UI3D {
 		const projectorManager = this.m_roomManager.getRoomNodeMgrByRoomNodeType(RoomNodeType.RNT_PROJECTOR)
 		if (projectorManager) {
 			for (const projector of projectorManager.getRoomNodes()) {
-				if (projector instanceof ProjectorRoomNode)
-					projector.publishObjectPoint({x: position.x, y: position.y, z: position.z})
+				if (projector instanceof ProjectorRoomNode){
+					if(projector.getIsCalibrating()){
+						projector.publishObjectPoint({x: position.x, y: position.y, z: position.z})
+						let material = new THREE.MeshStandardMaterial({ color: 0x0077ff });
+						let geometry = new THREE.SphereGeometry(0.025, 32, 32); // radius, widthSegments, heightSegments
+						let sphere = new THREE.Mesh(geometry, material);
+						sphere.position.set(position.x, position.y, position.z);
+						this.m_roomManager.stage.getScene().add(sphere);
+					}
+				}
 			}
 		}
 	}
