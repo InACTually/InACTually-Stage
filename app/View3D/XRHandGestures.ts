@@ -20,10 +20,11 @@ export default class XRHandGestures {
     private m_hand = {} as THREE.XRHandSpace;
 
     private m_closeGestureActive: boolean = false;
-    static readonly closeThreshold = 0.09;
+    static readonly closeThreshold = 0.1;
     static readonly openThreshold = 0.14;
-    private m_closeGestureTriggered: ((position: THREE.Vector3) => any) | undefined;
-    private m_closeGestureReleased: ((position: THREE.Vector3) => any) | undefined;
+    private m_closeGestureTriggered: ((position: THREE.Vector3, orientation: THREE.Quaternion) => any) | undefined;
+    private m_closeGestureHeld: ((position: THREE.Vector3, orientation: THREE.Quaternion) => any) | undefined;
+    private m_closeGestureReleased: ((position: THREE.Vector3, orientation: THREE.Quaternion) => any) | undefined;
 
     private m_middleTipDebugMesh: THREE.Object3D | undefined;
 	private m_wristDebugMesh: THREE.Object3D | undefined;
@@ -39,8 +40,9 @@ export default class XRHandGestures {
         this.m_debugMaterial = material;
     }
 
-    public activateCloseGesture(triggered: (position: THREE.Vector3) => any, released: (position: THREE.Vector3) => any, ) {
+    public activateCloseGesture(triggered: (position: THREE.Vector3, orientation: THREE.Quaternion) => any, held: (position: THREE.Vector3, orientation: THREE.Quaternion) => any, released: (position: THREE.Vector3, orientation: THREE.Quaternion) => any ) {
         this.m_closeGestureTriggered = triggered;
+        this.m_closeGestureHeld = held;
         this.m_closeGestureReleased = released;
     }
 
@@ -49,7 +51,7 @@ export default class XRHandGestures {
     }
 
     private updateCloseGesture() {
-        if (!this.m_closeGestureReleased || !this.m_closeGestureTriggered)
+        if (!this.m_closeGestureReleased || !this.m_closeGestureTriggered || !this.m_closeGestureHeld)
             return;
 
         let wrist = this.m_hand.joints["wrist"];
@@ -59,22 +61,32 @@ export default class XRHandGestures {
 		if(!wrist || !middleFingerDistal || !ringFingerDistal) 
             return;
 
-        let wristPosition = wrist.getWorldPosition(new THREE.Vector3());
-        let middleFingerDistalPosition = middleFingerDistal.getWorldPosition(new THREE.Vector3());
-        let ringFingerDistalPosition = ringFingerDistal.getWorldPosition(new THREE.Vector3());
+        const wristPosition = wrist.getWorldPosition(new THREE.Vector3());
+        const wristOrientation = wrist.getWorldQuaternion(new THREE.Quaternion())
+        const middleFingerDistalPosition = middleFingerDistal.getWorldPosition(new THREE.Vector3());
+        const middleFingerDistalOrientation = middleFingerDistal.getWorldQuaternion(new THREE.Quaternion())
+        const ringFingerDistalPosition = ringFingerDistal.getWorldPosition(new THREE.Vector3());
+        const ringFingerDistalOrientation = ringFingerDistal.getWorldQuaternion(new THREE.Quaternion())
+
         
+        //check if gesture should end
         let distance = (wristPosition.distanceTo(middleFingerDistalPosition) + wristPosition.distanceTo(ringFingerDistalPosition)) / 2;
         if(distance <= XRHandGestures.closeThreshold) {
             if (!this.m_closeGestureActive){
                 this.m_closeGestureActive = true;
-                this.m_closeGestureTriggered(middleFingerDistalPosition.lerp(ringFingerDistalPosition, 0.5));
+                this.m_closeGestureTriggered(middleFingerDistalPosition.clone().lerp(ringFingerDistalPosition, 0.5), middleFingerDistalOrientation.clone().slerp(ringFingerDistalOrientation, 0.5));
             }
         }
         else if (distance >= XRHandGestures.openThreshold) {
             if (this.m_closeGestureActive){
                 this.m_closeGestureActive = false;
-                this.m_closeGestureReleased(middleFingerDistalPosition.lerp(ringFingerDistalPosition, 0.5));
+                this.m_closeGestureReleased(middleFingerDistalPosition.clone().lerp(ringFingerDistalPosition, 0.5), middleFingerDistalOrientation.clone().slerp(ringFingerDistalOrientation, 0.5));
             }
+        }
+
+        //call update
+        if(this.m_closeGestureActive){
+            this.m_closeGestureHeld(middleFingerDistalPosition.clone().lerp(ringFingerDistalPosition, 0.5), middleFingerDistalOrientation.clone().slerp(ringFingerDistalOrientation, 0.5));
         }
 
         //show Debug meshes
