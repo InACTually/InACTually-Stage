@@ -26,7 +26,6 @@ import { XRControllerModelFactory } from 'three/addons/webxr/XRControllerModelFa
 import { XRHandModelFactory } from 'three/addons/webxr/XRHandModelFactory.js';
 import ProjectorRoomNode from "../RoomNodes/Projector/ProjectorRoomNode";
 import XRHandGestures from "./XRHandGestures";
-import type { cross } from "three/examples/jsm/nodes/Nodes.js";
 
 export default class UI3D {
 
@@ -332,9 +331,6 @@ export default class UI3D {
 		return pos;
 	}
 
-
-
-
 	private setupControls() {
 		let leftControlRay = this.createControlRay(0);
 		let rightControlRay = this.createControlRay(1);
@@ -355,8 +351,11 @@ export default class UI3D {
 		this.m_roomManager.stage.getScene().add(sphere1);
 
 		this.m_hand0Gestures.addDebugMeshes(sphere0, sphere1, material);
-		this.m_hand0Gestures.activateCloseGesture(this.hand0Closed.bind(this), this.hand0Held.bind(this), this.hand0Released.bind(this))
-		this.m_hand1Gestures.activateCloseGesture(this.hand1Closed.bind(this), this.hand1Held.bind(this), this.hand1Released.bind(this))
+		this.m_hand0Gestures.activateCloseGesture(this.handClosed.bind(this),() => {}, () => {})
+		this.m_hand1Gestures.activateCloseGesture(this.handClosed.bind(this), () => {}, () => {})
+
+		this.m_hand0Gestures.activatePinchGesture(this.hand0PinchTriggered.bind(this), this.hand0PinchHeld.bind(this), this.hand0PinchReleased.bind(this))
+		this.m_hand1Gestures.activatePinchGesture(this.hand1PinchTriggered.bind(this), this.hand1PinchHeld.bind(this), this.hand1PinchReleased.bind(this))
 
 		let leftController = this.createController(0);
 		let rightController = this.createController(1);
@@ -397,46 +396,7 @@ export default class UI3D {
 		this.m_hand1Gestures.update();
 	}
 
-	//get called by hand gesture manager
-	private hand0Closed(position: THREE.Vector3, orientation: THREE.Quaternion){
-		this.handClosed(position, orientation, 0)
-	}
-
-	private hand1Closed(position: THREE.Vector3, orientation: THREE.Quaternion){
-		this.handClosed(position, orientation, 1)
-	}
-
-	private hand0Held(position: THREE.Vector3, orientation: THREE.Quaternion){
-		//check if draggin
-		if (this.m_xrHand0MoveReferenceSpace)
-			this.moveReferenceSpaceHandle(position, orientation, 0)
-	}
-
-	private hand1Held(position: THREE.Vector3, orientation: THREE.Quaternion){
-		//check if dragging
-		if (this.m_xrHand1MoveReferenceSpace)
-			this.moveReferenceSpaceHandle(position, orientation, 1)
-	}
-
-	private hand0Released(){
-		if (this.m_xrHand0MoveReferenceSpace){
-			this.m_xrHand0MoveReferenceSpace = false;
-			this.applyReferenceSpaceTransform();
-		}
-
-	}
-
-	private hand1Released(){
-		if (this.m_xrHand1MoveReferenceSpace){
-			this.m_xrHand1MoveReferenceSpace = false;
-			this.applyReferenceSpaceTransform();
-		}
-	}
-
-	
-	private handClosed(position: THREE.Vector3, orientation: THREE.Quaternion, hand: number){
-		
-		//add visual for correspondence
+	private handClosed(position: THREE.Vector3, orientation: THREE.Quaternion){
 		const projectorManager = this.m_roomManager.getRoomNodeMgrByRoomNodeType(RoomNodeType.RNT_PROJECTOR)
 		if (projectorManager) {
 			for (const projector of projectorManager.getRoomNodes()) {
@@ -452,20 +412,52 @@ export default class UI3D {
 				}
 			}
 		}
+	}
 
+	private hand0PinchTriggered(position: THREE.Vector3, orientation: THREE.Quaternion){
 		//if proximity to origin(0,0,0) < min DIstance (1cm)
 		//safe porsition and rotation offste
 		if (position.length() < 0.1 && !this.m_xrHand0MoveReferenceSpace && !this.m_xrHand1MoveReferenceSpace) {
 			this.baseRefSpace = this.m_xr.getReferenceSpace();
+			this.m_xrHandStartOffsetToOrigin.copy(position);
+			this.m_xrHand0MoveReferenceSpace = true;
+		}
+	}
 
-			if (hand == 0){
-				this.m_xrHandStartOffsetToOrigin.copy(position);
-				this.m_xrHand0MoveReferenceSpace = true;
-			}
-			else if (hand == 1) {
-				this.m_xrHandStartOffsetToOrigin.copy(position);
-				this.m_xrHand1MoveReferenceSpace = true;
-			}
+	private hand1PinchTriggered(position: THREE.Vector3, orientation: THREE.Quaternion){
+		//if proximity to origin(0,0,0) < min DIstance (1cm)
+		//safe porsition and rotation offste
+		if (position.length() < 0.1 && !this.m_xrHand0MoveReferenceSpace && !this.m_xrHand1MoveReferenceSpace) {
+			this.baseRefSpace = this.m_xr.getReferenceSpace();
+			this.m_xrHandStartOffsetToOrigin.copy(position);
+			this.m_xrHand1MoveReferenceSpace = true;
+		}
+	}
+
+	private hand0PinchHeld(position: THREE.Vector3, orientation: THREE.Quaternion){
+		//check if draggin
+		if (this.m_xrHand0MoveReferenceSpace)
+			this.moveReferenceSpaceHandle(position, orientation, 0)
+	}
+
+	private hand1PinchHeld(position: THREE.Vector3, orientation: THREE.Quaternion){
+		//check if dragging
+		if (this.m_xrHand1MoveReferenceSpace)
+			this.moveReferenceSpaceHandle(position, orientation, 1)
+	}
+
+	private hand0PinchReleased(){
+		if (this.m_xrHand0MoveReferenceSpace){
+			this.m_xrHand0MoveReferenceSpace = false;
+			this.applyReferenceSpaceTransform();
+		}
+
+	}
+
+	private hand1PinchReleased(){
+		if (this.m_xrHand1MoveReferenceSpace){
+			this.m_xrHand1MoveReferenceSpace = false;
+			this.applyReferenceSpaceTransform();
 		}
 	}
 

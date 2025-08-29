@@ -26,6 +26,13 @@ export default class XRHandGestures {
     private m_closeGestureHeld: ((position: THREE.Vector3, orientation: THREE.Quaternion) => any) | undefined;
     private m_closeGestureReleased: ((position: THREE.Vector3, orientation: THREE.Quaternion) => any) | undefined;
 
+    private m_pinchGestureActive: boolean = false;
+    static readonly pinchCloseThreshold = 0.005;
+    static readonly pinchOpenThreshold = 0.01;
+    private m_pinchGestureTriggered: ((position: THREE.Vector3, orientation: THREE.Quaternion) => any) | undefined;
+    private m_pinchGestureHeld: ((position: THREE.Vector3, orientation: THREE.Quaternion) => any) | undefined;
+    private m_pinchGestureReleased: ((position: THREE.Vector3, orientation: THREE.Quaternion) => any) | undefined;
+
     private m_middleTipDebugMesh: THREE.Object3D | undefined;
 	private m_wristDebugMesh: THREE.Object3D | undefined;
     private m_debugMaterial: THREE.MeshStandardMaterial | undefined;
@@ -46,8 +53,15 @@ export default class XRHandGestures {
         this.m_closeGestureReleased = released;
     }
 
+    public activatePinchGesture(triggered: (position: THREE.Vector3, orientation: THREE.Quaternion) => any, held: (position: THREE.Vector3, orientation: THREE.Quaternion) => any, released: (position: THREE.Vector3, orientation: THREE.Quaternion) => any ) {
+        this.m_pinchGestureTriggered = triggered;
+        this.m_pinchGestureHeld = held;
+        this.m_pinchGestureReleased = released;
+    }
+
     public update(): void {
         this.updateCloseGesture();
+        this.updatePinchGesture();
     }
 
     private updateCloseGesture() {
@@ -104,6 +118,43 @@ export default class XRHandGestures {
             }
         }
         
+    }
+
+    private updatePinchGesture() {
+        if (!this.m_pinchGestureReleased || !this.m_pinchGestureTriggered || !this.m_pinchGestureHeld)
+            return;
+
+        let thumbTip = this.m_hand.joints["thumb-tip"];
+		let indexFingerTip = this.m_hand.joints["index-finger-tip"];
+
+
+		if(!thumbTip || !indexFingerTip) 
+            return;
+
+        const thumbPos = thumbTip.getWorldPosition(new THREE.Vector3());
+        const thumbQuat = thumbTip.getWorldQuaternion(new THREE.Quaternion())
+        const indexPos = indexFingerTip.getWorldPosition(new THREE.Vector3());
+        const indexQuat = indexFingerTip.getWorldQuaternion(new THREE.Quaternion())
+        
+        //check if gesture should end
+        let distance = thumbPos.distanceTo(indexPos);
+        if(distance <= XRHandGestures.pinchCloseThreshold) {
+            if (!this.m_pinchGestureActive){
+                this.m_pinchGestureActive = true;
+                this.m_pinchGestureTriggered(thumbPos.clone().lerp(indexPos, 0.5), thumbQuat.clone().slerp(indexQuat, 0.5));
+            }
+        }
+        else if (distance >= XRHandGestures.pinchOpenThreshold) {
+            if (this.m_pinchGestureActive){
+                this.m_pinchGestureActive = false;
+                this.m_pinchGestureReleased(thumbPos.clone().lerp(indexPos, 0.5), thumbQuat.clone().slerp(indexQuat, 0.5));
+            }
+        }
+
+        //call update
+        if(this.m_pinchGestureActive){
+            this.m_pinchGestureHeld(thumbPos.clone().lerp(indexPos, 0.5), indexQuat.clone().slerp(indexQuat, 0.5));
+        }
     }
 
 }
