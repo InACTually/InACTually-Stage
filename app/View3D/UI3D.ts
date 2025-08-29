@@ -53,6 +53,8 @@ export default class UI3D {
 	private m_xrHand1MoveReferenceSpace = false;
 	private m_xrHandStartOffsetToOrigin = new THREE.Vector3();
 
+	private m_newXROrigin: THREE.Vector3 | null = null;
+
 
 	private m_xrreferenceSpaceHandle = new THREE.AxesHelper(0.5);
 
@@ -351,11 +353,11 @@ export default class UI3D {
 		this.m_roomManager.stage.getScene().add(sphere1);
 
 		this.m_hand0Gestures.addDebugMeshes(sphere0, sphere1, material);
-		this.m_hand0Gestures.activateCloseGesture(this.handClosed.bind(this),() => {}, () => {})
-		this.m_hand1Gestures.activateCloseGesture(this.handClosed.bind(this), () => {}, () => {})
+		this.m_hand0Gestures.activateCloseGesture(this.handClosed.bind(this),() => {}, () => {});
+		this.m_hand1Gestures.activateCloseGesture(this.handClosed.bind(this), () => {}, () => {});
 
-		this.m_hand0Gestures.activatePinchGesture(this.hand0PinchTriggered.bind(this), this.hand0PinchHeld.bind(this), this.hand0PinchReleased.bind(this))
-		this.m_hand1Gestures.activatePinchGesture(this.hand1PinchTriggered.bind(this), this.hand1PinchHeld.bind(this), this.hand1PinchReleased.bind(this))
+		this.m_hand0Gestures.activatePinchGesture(this.handPinched.bind(this), () => {}, () => {});
+		this.m_hand1Gestures.activatePinchGesture(this.handPinched.bind(this), () => {}, () => {});
 
 		let leftController = this.createController(0);
 		let rightController = this.createController(1);
@@ -414,6 +416,51 @@ export default class UI3D {
 		}
 	}
 
+	private handPinched(position: THREE.Vector3, orientation: THREE.Quaternion){
+		if (!this.m_newXROrigin) {
+			this.m_newXROrigin = position; // set origin
+			this.m_xrreferenceSpaceHandle.position.copy(position);
+		}
+		else  { //use exsiting origin and new position as foreward
+			const z = this.m_newXROrigin.clone().sub(position);
+			z.y = 0; //z projected on ground
+			z.normalize()
+			const y = new THREE.Vector3(0, 1, 0);
+			const x = y.clone().cross(z).normalize();
+			
+			const rotMatrix = new THREE.Matrix4();
+			rotMatrix.makeBasis(x, y, z); 
+			
+			const quat = new THREE.Quaternion().setFromRotationMatrix(rotMatrix);
+			
+			this.m_xrreferenceSpaceHandle.quaternion.copy(quat);
+			
+			this.applyReferenceSpaceTransform();
+
+			this.m_newXROrigin = null; //next one is origin again
+		}
+	}
+
+	private applyReferenceSpaceTransform(){
+		if (!this.baseRefSpace) 
+			return;
+		
+		let worldPos = this.m_xrreferenceSpaceHandle.getWorldPosition(new THREE.Vector3());
+		let worldQuat = this.m_xrreferenceSpaceHandle.getWorldQuaternion(new THREE.Quaternion());
+		
+		const transform = new XRRigidTransform(
+		  { x: worldPos.x, y: worldPos.y, z: worldPos.z },
+		  { x: worldQuat.x, y: worldQuat.y, z: worldQuat.z, w: worldQuat.w }
+		);
+		
+		const offsetSpace = this.baseRefSpace.getOffsetReferenceSpace(transform);
+		this.m_xr.setReferenceSpace(offsetSpace);
+
+		this.m_xrreferenceSpaceHandle.position.set(0, 0,0 );
+		this.m_xrreferenceSpaceHandle.setRotationFromQuaternion(new THREE.Quaternion());
+	}
+
+	/*
 	private hand0PinchTriggered(position: THREE.Vector3, orientation: THREE.Quaternion){
 		//if proximity to origin(0,0,0) < min DIstance (1cm)
 		//safe porsition and rotation offste
@@ -497,5 +544,6 @@ export default class UI3D {
 		this.m_xrreferenceSpaceHandle.position.set(0, 0,0 );
 		this.m_xrreferenceSpaceHandle.setRotationFromQuaternion(new THREE.Quaternion());
 	}
+	*/
 
 }
