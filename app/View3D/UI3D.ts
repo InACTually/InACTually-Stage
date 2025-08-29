@@ -49,18 +49,14 @@ export default class UI3D {
 	private m_hand0Gestures = {} as XRHandGestures;
 	private m_hand1Gestures = {} as XRHandGestures;
 
-	private m_xrHand0MoveReferenceSpace = false;
-	private m_xrHand1MoveReferenceSpace = false;
-	private m_xrHandStartOffsetToOrigin = new THREE.Vector3();
+	//private m_xrHand0MoveReferenceSpace = false;
+	//private m_xrHand1MoveReferenceSpace = false;
+	//private m_xrHandStartOffsetToOrigin = new THREE.Vector3();
 
 	private m_newXROrigin: THREE.Vector3 | null = null;
 
 
 	private m_xrreferenceSpaceHandle = new THREE.AxesHelper(0.5);
-
-
-
-	private baseRefSpace: XRReferenceSpace | null = null;
 
 	constructor(canvas: HTMLElement, roomManager: RoomManager) {
 		this.m_canvas = canvas;
@@ -442,7 +438,8 @@ export default class UI3D {
 	}
 
 	private applyReferenceSpaceTransform(){
-		if (!this.baseRefSpace) 
+		const baseRefSpace = this.m_xr.getReferenceSpace();
+		if (!baseRefSpace) 
 			return;
 		
 		let worldPos = this.m_xrreferenceSpaceHandle.getWorldPosition(new THREE.Vector3());
@@ -453,7 +450,7 @@ export default class UI3D {
 		  { x: worldQuat.x, y: worldQuat.y, z: worldQuat.z, w: worldQuat.w }
 		);
 		
-		const offsetSpace = this.baseRefSpace.getOffsetReferenceSpace(transform);
+		const offsetSpace = baseRefSpace.getOffsetReferenceSpace(transform);
 		this.m_xr.setReferenceSpace(offsetSpace);
 
 		this.m_xrreferenceSpaceHandle.position.set(0, 0,0 );

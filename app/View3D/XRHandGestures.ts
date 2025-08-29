@@ -27,8 +27,8 @@ export default class XRHandGestures {
     private m_closeGestureReleased: ((position: THREE.Vector3, orientation: THREE.Quaternion) => any) | undefined;
 
     private m_pinchGestureActive: boolean = false;
-    static readonly pinchCloseThreshold = 0.005;
-    static readonly pinchOpenThreshold = 0.01;
+    static readonly pinchCloseThreshold = 0.008;
+    static readonly pinchOpenThreshold = 0.02;
     private m_pinchGestureTriggered: ((position: THREE.Vector3, orientation: THREE.Quaternion) => any) | undefined;
     private m_pinchGestureHeld: ((position: THREE.Vector3, orientation: THREE.Quaternion) => any) | undefined;
     private m_pinchGestureReleased: ((position: THREE.Vector3, orientation: THREE.Quaternion) => any) | undefined;
