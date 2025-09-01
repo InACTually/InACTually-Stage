@@ -172,13 +172,20 @@ export default class ProjectorRoomNode extends RoomNodeBase {
 				points.push(new THREE.Vector3(0));
 				//poitn at z=5
 				let farPoint = new THREE.Vector3(0, 0, z)
-				farPoint.x = (this.m_resolution.value.value.x * x - this.m_principalPoint.value.value.x) 
-						/ this.m_focalLengthPixel.value.value.x 
-						* -z
-
-				farPoint.y = (this.m_resolution.value.value.y * y - this.m_principalPoint.value.value.y) 
-						/ this.m_focalLengthPixel.value.value.y 
-						* z //negated (twice)
+				let u = this.m_resolution.value.value.x * x;
+				let v = this.m_resolution.value.value.y * y;
+				
+				let cx = this.m_principalPoint.value.value.x;
+				let cy = this.m_principalPoint.value.value.y;
+				let fx = this.m_focalLengthPixel.value.value.x;
+				let fy = this.m_focalLengthPixel.value.value.y;
+				let skew = this.m_skew.value.value;
+				
+				let normY = (v - cy) / fy;
+				let normX = (u - cx - skew * normY) / fx;
+				
+				farPoint.x = normX * -z;
+				farPoint.y = normY * z;
 
 				points.push(farPoint);
 			}
