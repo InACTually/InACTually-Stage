@@ -24,7 +24,10 @@ import Parameter from "../Utils/Parameter";
 
 export default class ProjectorRoomNode extends RoomNodeBase {
 	private m_frustum: THREE.LineSegments = {} as THREE.LineSegments;
-	private m_frustumGeom: THREE.BufferGeometry = new THREE.BufferGeometry();;
+	private m_frustumGeom: THREE.BufferGeometry = new THREE.BufferGeometry();
+	private m_frustumIntersectionWithGround: THREE.Mesh[] = [] as THREE.Mesh[];
+	private m_localFarPoints: THREE.Vector3[] = [] as THREE.Vector3[];
+
 
 	private m_resolution = new Parameter<{ x: number, y: number}>("resolution", { x: 1920, y: 1080 }, { x: 1, y: 1 }, {x: 10000, y: 10000 }, this.publishParams.bind(this));
 	private m_isCalibrating = new Parameter<boolean>("isCalibrating", false, false, true, this.publishParams.bind(this));
@@ -71,6 +74,15 @@ export default class ProjectorRoomNode extends RoomNodeBase {
 
 			// frustum.applyQuaternion(quaternionX.multiply(quaternionZ));
 
+			let intersectionMaterial = new THREE.MeshStandardMaterial({ color: 0x9370DB });
+			
+			let intersectionGeometry = new THREE.SphereGeometry(0.05, 32, 32); // radius, widthSegments, heightSegments
+			for (let i = 0; i < 4; i++) {
+				const mesh = new THREE.Mesh(intersectionGeometry, intersectionMaterial);
+				this.m_frustumIntersectionWithGround.push(mesh);
+				this.getRawObject3D().add(mesh);
+			}
+
 			this.m_frustum = frustum;
 			this.m_frustum.visible = true;
 			//this.m_frustum.layers.set(2);
@@ -83,6 +95,25 @@ export default class ProjectorRoomNode extends RoomNodeBase {
 	}
 
 	public override update(): void {
+		let origin = this.getObject3D().position.clone();
+
+		//calculate intersection with ground plane
+		for (let i = 0; i < 4; i++) {
+			let globalFarPoint = this.getObject3D().localToWorld(this.m_localFarPoints[i].clone());
+			let direction = new THREE.Vector3().subVectors(globalFarPoint, origin).normalize();
+			
+			let ray = new THREE.Ray(origin, direction);
+
+			let groundPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
+
+			// 3. Find intersection
+			let hitPoint = new THREE.Vector3();
+			if (ray.intersectPlane(groundPlane, hitPoint)) {
+				let hitPointLocal = this.getObject3D().worldToLocal(hitPoint.clone());
+				this.m_frustumIntersectionWithGround[i].position.copy(hitPointLocal);
+			}
+		}
+
 	}
 
 	public getFrustum(): THREE.LineSegments {
@@ -153,12 +184,12 @@ export default class ProjectorRoomNode extends RoomNodeBase {
 			}
 		}
 
-		const farPoints = [ points[1], points[3], points[7], points[5] ];
+		this.m_localFarPoints = [ points[1], points[3], points[7], points[5] ];
 
 		// Connect far-plane edges
 		for (let i = 0; i < 4; i++) {
 			const next = (i + 1) % 4;
-			points.push(farPoints[i], farPoints[next]);
+			points.push(this.m_localFarPoints[i], this.m_localFarPoints[next]);
 		}
 
 		this.m_frustumGeom.setFromPoints(points);
