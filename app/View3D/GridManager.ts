@@ -40,6 +40,9 @@ export default class GridManager {
 		this.m_gridLinear.position.set(0, 0, 0);
 		this.m_gridLinear.visible = false;
 
+		this.m_gridLinear.material.transparent = true;
+		this.m_gridLinear.material.opacity = 0.3;
+
 		this.m_gridRadial = new THREE.PolarGridHelper(5, 16, 8, 64, 0xffffff, 0xeeeeee);
 		this.m_gridRadial.position.set(0, 0, 0);
 		this.m_gridRadial.visible = false;
