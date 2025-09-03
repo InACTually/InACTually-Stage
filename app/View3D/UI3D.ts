@@ -337,7 +337,8 @@ export default class UI3D {
 		let hand1 = this.createHand(1);
 		this.m_hand0Gestures = new XRHandGestures(hand0);
 		this.m_hand1Gestures = new XRHandGestures(hand1);
-
+		
+		/*
 		let material = new THREE.MeshStandardMaterial({ color: 0x0077ff });
 
 		let geometry = new THREE.SphereGeometry(0.01, 32, 32); // radius, widthSegments, heightSegments
@@ -349,6 +350,8 @@ export default class UI3D {
 		this.m_roomManager.stage.getScene().add(sphere1);
 
 		this.m_hand0Gestures.addDebugMeshes(sphere0, sphere1, material);
+		*/
+		
 		this.m_hand0Gestures.activateCloseGesture(this.handClosed.bind(this),() => {}, () => {});
 		this.m_hand1Gestures.activateCloseGesture(this.handClosed.bind(this), () => {}, () => {});
 
