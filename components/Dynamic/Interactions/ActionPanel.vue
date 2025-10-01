@@ -14,83 +14,111 @@
 	contributors:
 	Fabian Töpfer - baniaf@uber.space
 -->
-
 <template>
-    <DynamicPanelBase v-model="expand">
-        <template v-slot:title>
-            ACTIONS
-        </template>
-        <template v-slot:content>
-            <CommonPanelRow v-for="c in actions" :key="c.name" :id="c.name + '_action_button'">
-                <h6>{{ c.name }}</h6>
-            </CommonPanelRow>
-        </template>
-    </DynamicPanelBase>
-</template>
-<script setup lang="ts">
-import InteractionManager from "~/app/InteractionManager";
-import type { ActionType, IActionBaseConstructor } from "~/app/Interactions/ActionRegistry";
-import {ActionRegistry, ActionTypeName } from "~/app/Interactions/ActionRegistry";
-import type ActionSpaceRoomNode from "~/app/RoomNodes/ActionSpace/ActionSpaceRoomNode";
-import UI3D from "~/app/View3D/UI3D";
-import { GUIState } from "~/composables/useGUIState";
- 
-
-let { guiState } = useGUIState();
-let { setDraggable } = useDragAndDrop();
-
-let expand = ref<boolean>(false);
-
-let actions = reactive([] as {name:string,type:ActionType}[]);
-
-const props = defineProps({
-    interactionManager:{
-        type:InteractionManager,
-        required:true
-    },
-    ui3d:{
-        type:UI3D,
-        required:true
-    },
-
-});
-onBeforeMount(()=>{
-    ActionRegistry.forEach((value: any, key: any) => {    
-       actions.push({name: ActionTypeName[key],type:key});
-   });
-})
-onMounted(() => {
-    actions.forEach((a:{name:string,type:ActionType})=>{
+  <div class="dynamic_panel">
+    <!-- collapsible content -->
+    <div class="dynamic_panel_content" v-if="expand">
+      <div
+        class="action row"
+        v-for="action in actions"
+        :key="action.name"
+        @click="setAction(action)"
+      >
+        <h6>
+          {{ action.name }}
+        </h6>
         
-        let element = document.getElementById(a.name + "_action_button");
+        <i :class="actionTypeIcons[action.type]" style="margin-right: 6px; font-size: 1rem"></i>
 
-        if(element)
-            setDraggable(
-                element,
-                a.name,
-                (event:any)=>{
-                },
-                (event:any)=>{
-                    let actionSpace = props.ui3d.hitsRoomNodeFrom2DEvent(event);
-                    if(actionSpace)
-                        addAction(a.type,actionSpace as ActionSpaceRoomNode)
-                }
-            )
-    })
-})
+      </div>
+    </div>
 
-function addAction(type:ActionType, actionSpace:ActionSpaceRoomNode){
-    props.interactionManager.createActionByType(type,actionSpace);
+    <!-- panel title / toggle -->
+    <div class="dynamic_panel_content">
+      <div class="action" @click="expand = !expand">
+         <i :class="actionTypeIcons[currentActionType]" style="margin-right: 6px; font-size: 2rem"></i>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref } from "vue";
+import { ActionType } from "~/app/Interactions/ActionRegistry";
+
+let expand = defineModel<boolean>();
+
+const props = defineProps<{
+  actions: { name: string; type: ActionType }[];
+}>();
+
+const emits = defineEmits(["setAction"]);
+const currentActionType = ref(ActionType.AT_UNKNOWN);
+
+const actionTypeIcons: Record<ActionType, string> = {
+  [ActionType.AT_UNKNOWN]: "pi pi-question",
+  [ActionType.AT_MOVEMENT]: "pi pi-forward",
+};
+
+function setAction(action: { type: ActionType; name: string }) {
+  currentActionType.value = action.type;
+  expand.value = false;
+  emits("setAction", action);
 }
-
-watch(guiState, () => {
-    if (guiState.value == GUIState.GS_CONFIG) {
-        expand.value = true;
-    }
-    else expand.value = false;
-})
-
 </script>
+
 <style scoped lang="scss">
-@use "@/assets/style/vars.scss";
+@use "@/assets/style/vars.scss" as vars;
+
+.dynamic_panel {
+  width: 100%;
+  max-width: 300px;
+  display: flex;
+  flex-direction: column-reverse;
+  justify-content: start;
+  align-items: center;
+  transition: all 0.3s ease-out;
+  padding: vars.$padding;
+
+  .dynamic_panel_content {
+    width:100%;
+    transition: max-height 0.3s ease-out;
+
+
+    .action {
+      background-color: vars.$semiTransparentColor;
+      border: solid vars.$borderWidth vars.$borderColor;
+      border-radius: 10px;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      margin: vars.$padding;
+      padding: vars.$padding;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      &.row {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content:space-between;
+        align-items:center;
+      }
+      &:hover {
+        background-color: vars.$backgroundColor;
+      }
+    }
+  }
+
+  .dynamic_panel_title {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+    align-items: center;
+    min-height: 30px;
+    padding: vars.$padding;
+    cursor: pointer;
+ 
+  }
+}
 </style>

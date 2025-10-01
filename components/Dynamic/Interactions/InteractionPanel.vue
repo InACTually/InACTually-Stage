@@ -16,33 +16,13 @@
 -->
 
 <template>
-    <DynamicPanelBase id="interactionpanel" v-model="expand">
-         <template v-slot:title>
-            <div class="title_wrapper">
-                    <h6 class="title">INTERACTION</h6>
-                <div class="row">
-                    <h6>{{  ActionTypeName[currentActionType]}}</h6>
-                    <h6><i class="pi pi-arrow-right" style="font-size: 0.6rem"></i></h6>
-                    <h6>{{ ReactionTypeName[currentReactionType]}}</h6>
-                </div>
-            </div>
-        </template>
-        <template v-slot:content>
-            <div class="interactionpanel_content">
-                <div class="row" >
-                    <div class="actions" >
-                        <h6>ACTIONS</h6>
-                        <h6 v-for="action in actions" :key="action.name" @click="setAction(action)">{{ action.name }}</h6>
-                    </div>
-                    <div class="reactions" >
-                        <h6>REACTIONS</h6>
-                        <h6 v-for="reaction in reactions" :key="reaction.name" @click="setReaction(reaction)">{{ reaction.name }}</h6>
-                    </div>
-                </div>
-            </div>
-        </template>
-   
-    </DynamicPanelBase>
+    <div id="interactionpanel">
+        <DynamicInteractionsActionPanel :actions="actions" class="panel" @setAction="setAction"></DynamicInteractionsActionPanel>
+        
+        <h6><i class="pi pi-arrow-right" style="font-size: 4rem; margin-top:20px;"></i></h6>
+
+        <DynamicInteractionsReactionPanel :reactions="reactions" class="panel" @setReaction="setReaction"></DynamicInteractionsReactionPanel>
+    </div>
 </template>
 <script setup lang="ts">
 import type ActionSpaceRoomNode from '~/app/RoomNodes/ActionSpace/ActionSpaceRoomNode';
@@ -53,7 +33,6 @@ import type InteractionManager from '~/app/InteractionManager';
 import type { IInteraction } from '~/app/InteractionManager';
 
 const props = defineProps(["actionspace","camera","interactionManager"])
-const expand = ref(false);
 
 const actions = reactive([] as {name:string,type:ActionType}[]);
 const reactions = reactive([] as {name:string,type:ReactionType}[]);
@@ -64,7 +43,7 @@ const currentReactionType = ref(ReactionType.RT_UNKNOWN);
 
 const currentInteraction = ref<IInteraction|undefined>(undefined)
 
-
+ 
 onBeforeMount(()=>{
     ActionRegistry.forEach((value: any, key: any) => {    
        actions.push({name: ActionTypeName[key],type:key});
@@ -78,7 +57,7 @@ onMounted(()=>{
     const label = document.getElementById("interactionpanel");
     let unwatchPos = undefined as any;
 
-    if(label){
+    if(label && props.actionspace){
         updateLabelPosition( props.actionspace,label);
 
         unwatchPos = watch(props.actionspace.getObject3D().position,()=>{
@@ -95,6 +74,8 @@ onMounted(()=>{
                 updateLabelPosition( props.actionspace,label);
             });
         })
+    }else{
+        updateToPosition(label!, window.innerWidth/2 - 100, window.innerHeight/2 - 150);
     }
     setCurrentInteraction();
 
@@ -127,6 +108,12 @@ function updateLabelPosition(actionspace:ActionSpaceRoomNode, labelElement:HTMLE
     labelElement.style.left = (vector.x * widthHalf + widthHalf) - 100 + 'px';
     labelElement.style.top = -(vector.y * heightHalf - heightHalf) - 150 + 'px';
 }
+
+function updateToPosition(labelElement:HTMLElement, left:number, top:number){
+     
+    labelElement.style.left = left + 'px';
+    labelElement.style.top = top + 'px';
+}
  
 
 function setAction(action:{type:ActionType,name:string}){
@@ -136,8 +123,7 @@ function setAction(action:{type:ActionType,name:string}){
 
 function setReaction(reaction:{type:ReactionType,name:string}){
     currentReactionType.value = reaction.type;
-        (props.interactionManager as InteractionManager).createReactionByType(reaction.type,(props.actionspace as ActionSpaceRoomNode))
-
+    (props.interactionManager as InteractionManager).createReactionByType(reaction.type,(props.actionspace as ActionSpaceRoomNode))
 }
 
 </script>
@@ -147,6 +133,15 @@ function setReaction(reaction:{type:ReactionType,name:string}){
     position:absolute;
     z-index: 10;
     transition:none;
+    display: flex;
+    flex-direction: row ;
+    justify-content: center;
+    align-items: flex-start;
+    width:400px;
+
+    .panel{
+        margin:20px;
+    }
     
     .title_wrapper{
         display:flex;

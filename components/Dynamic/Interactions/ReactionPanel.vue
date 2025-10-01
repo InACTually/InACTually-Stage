@@ -15,81 +15,132 @@
 	Fabian Töpfer - baniaf@uber.space
 -->
 
-<template>
-    <DynamicPanelBase v-model="expand">
-        <template v-slot:title>
-            REACTIONS
-        </template>
-        <template v-slot:content>
-            <CommonPanelRow v-for="c in reactions" :key="c.name" :id="c.name + '_reaction_button'">
-                <h6>{{ c.name }}</h6>
-            </CommonPanelRow>
-        </template>
-    </DynamicPanelBase>
-</template>
-<script setup lang="ts">
-import InteractionManager from "~/app/InteractionManager";
-import { ReactionRegistry, ReactionType, ReactionTypeName, type IReactionBaseConstructor } from "~/app/Interactions/ReactionRegistry";
-import type RoomNodeBase from "~/app/RoomNodes/RoomNodeBase";
-import UI3D from "~/app/View3D/UI3D";
-import { GUIState } from "~/composables/useGUIState";
+
  
 
-let { guiState } = useGUIState();
-let { setDraggable } = useDragAndDrop();
+<template>
+  <div class="dynamic_panel">
+    <!-- collapsible content -->
+    <div class="dynamic_panel_wrapper dynamic_panel_content" v-if="expand">
+      <div
+        class="reaction row"
+        v-for="reaction in reactions"
+        :key="reaction.name"
+        @click="setReaction(reaction)"
+      >
+        <h6>
+          {{ reaction.name }}
+        </h6>
+        <i :class="reactionTypeIcons[reaction.type]" style="margin-right: 6px; font-size: 1rem"></i>
 
-let expand = ref<boolean>(false);
+      </div>
+    </div>
 
-let reactions = reactive([] as {name:string,type:ReactionType}[]);
+    <!-- panel title / toggle -->
+    <div class="dynamic_panel_wrapper dynamic_panel_content">
+      <div class="reaction" @click="expand = !expand">
+        <span class="indicator" :class="{ filled: expand }"></span>
+        <i :class="reactionTypeIcons[currentReactionType]" style="margin-right: 6px; font-size: 2rem"></i>
+      </div>
+    </div>
+  </div>
+</template>
 
-const props = defineProps({
-    interactionManager:{
-        type:InteractionManager,
-        required:true
-    },
-    ui3d:{
-        type:UI3D,
-        required:true
-    },
-});
-onBeforeMount(()=>{
-    ReactionRegistry.forEach((value: any, key: any) => {    
-       reactions.push({name: ReactionTypeName[key],type:key});
-   });
-})
-onMounted(() => {
-    reactions.forEach((r:{name:string,type:ReactionType})=>{
-        
-        let element = document.getElementById(r.name + "_reaction_button");
+<script setup lang="ts">
+import { ref } from "vue";
+import { ReactionType } from "~/app/Interactions/ReactionRegistry";
 
-        if(element)
-            setDraggable(
-                element,
-                r.name,
-                (event:any)=>{
-                },
-                (event:any)=>{
-                    let roomNode = props.ui3d.hitsRoomNodeFrom2DEvent(event);
-                    
-                    if(roomNode)
-                        addReaction(r.type,roomNode)
-                }
-            )
-    })
-})
+let expand = defineModel<boolean>();
 
-function addReaction(type:ReactionType, roomNode:RoomNodeBase){
-  //  props.interactionManager.createReactionByType(type,roomNode);
+const props = defineProps<{
+  reactions: { name: string; type: ReactionType }[];
+}>();
+
+const emits = defineEmits(["setReaction"]);
+const currentReactionType = ref(ReactionType.RT_UNKNOWN);
+
+const reactionTypeIcons: Record<ReactionType, string> = {
+  [ReactionType.RT_UNKNOWN]: "pi pi-question",
+  [ReactionType.RT_FOLLOWING_LIGHT]: "pi pi-sun",
+};
+
+function setReaction(reaction: { type: ReactionType; name: string }) {
+  currentReactionType.value = reaction.type;
+    expand.value = false;
+
+  emits("setReaction", reaction);
 }
-
-watch(guiState, () => {
-    if (guiState.value == GUIState.GS_CONFIG) {
-        expand.value = true;
-    }
-    else expand.value = false;
-})
-
 </script>
+
+
 <style scoped lang="scss">
 @use "@/assets/style/vars.scss";
+
+.dynamic_panel {
+  width: 100%;
+  max-width: 300px;
+   
+  display: flex;
+  flex-direction: column-reverse;
+  justify-content: start;
+  align-items: center;
+  transition: all 0.3s ease-out;
+  padding: vars.$padding;
+
+  .dynamic_panel_content {
+    width: 90%;
+    max-height: 700px;
+    overflow: hidden;
+    transition: max-height 0.3s ease-out;
+
+    .reaction {
+      background-color: vars.$semiTransparentColor;
+      border: solid vars.$borderWidth vars.$borderColor;
+      border-radius: 10px;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      margin-bottom: vars.$padding;
+      padding: vars.$padding;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    
+      &.row {
+        flex-direction: row;
+       
+      }
+      &:hover {
+        background-color: vars.$backgroundColor;
+      }
+    }
+  }
+
+  .dynamic_panel_title {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+    align-items: center;
+    min-height: 30px;
+    padding: vars.$padding;
+    cursor: pointer;
+
+    .indicator {
+      height: 10px;
+      width: 10px;
+      border: solid vars.$borderWidth vars.$borderColor;
+      border-radius: 50%;
+
+      &.filled {
+        background-color: vars.$borderColor;
+      }
+    }
+  }
+}
 </style>
+
+
+
+
+ 
