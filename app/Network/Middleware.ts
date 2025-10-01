@@ -81,7 +81,8 @@ export default class Middleware implements IRoomNodePublisher, IInteractionPubli
 		this.writeLog(msg.fromMsgType(msg.getType()) + " " + msg.fromMsgMethod(msg.getMethod()), msg, true);
 
 		let isOwnRequest = this.m_ownRequests.get(msg.getUID());
-
+		console.log(isOwnRequest);
+		
 		if (isOwnRequest) {
 			this.m_ownRequests.delete(msg.getUID());
 
@@ -352,8 +353,14 @@ export default class Middleware implements IRoomNodePublisher, IInteractionPubli
 			return;
 
 		this.m_ownRequests.set(msg.getUID(), true);
-		this.m_networkManager.sendJson(msg.toJson());
+		
+		if (!this.m_networkManager.isConnected()) {
+			this.onMsg({ data: JSON.stringify(msg.toJson()) });
+		}else{
+			this.m_networkManager.sendJson(msg.toJson());
+		}
 		this.writeLog(msg.getType() + " " + msg.getMethod(), msg, false);
+
 	}
 
 	public writeLog(title: string, payload: any, isInput: boolean) {
@@ -378,10 +385,6 @@ export default class Middleware implements IRoomNodePublisher, IInteractionPubli
 		msg.setData(data);
 
 		this.m_waitingForResponse.set(msg.getUID(), cb);
-
-		if (!this.m_networkManager.isConnected()) {
-			this.onMsg({ data: JSON.stringify(msg.toJson()) });
-		}
 		this.sendMsg(msg);
 	}
 
@@ -391,12 +394,7 @@ export default class Middleware implements IRoomNodePublisher, IInteractionPubli
 
 		this.m_waitingForResponse.set(msg.getUID(), cb);
 
-		if (!this.m_networkManager.isConnected()) {
-			this.onMsg({ data: JSON.stringify(msg.toJson()) });
-		}
-
-		//console.log(msg);
-		this.sendMsg(msg);
+ 		this.sendMsg(msg);
 	}
 
 	public async deleteRoomNode(data: any, cb: { (msg: any): void }) {
@@ -405,9 +403,7 @@ export default class Middleware implements IRoomNodePublisher, IInteractionPubli
 
 		this.m_waitingForResponse.set(msg.getUID(), cb);
 
-		if (!this.m_networkManager.isConnected()) {
-			this.onMsg({ data: JSON.stringify(msg.toJson()) });
-		}
+		 
 		this.sendMsg(msg);
 	}
 
