@@ -32,7 +32,7 @@ import { ReactionRegistry, ReactionType, ReactionTypeName } from '~/app/Interact
 import type InteractionManager from '~/app/InteractionManager';
 import type { IInteraction } from '~/app/InteractionManager';
 
-const props = defineProps(["actionspace","camera","interactionManager"])
+const props = defineProps(["actionspace","stage","interactionManager"])
 
 const actions = reactive([] as {name:string,type:ActionType}[]);
 const reactions = reactive([] as {name:string,type:ReactionType}[]);
@@ -57,7 +57,7 @@ onMounted(()=>{
     const label = document.getElementById("interactionpanel");
     let unwatchPos = undefined as any;
 
-    if(label && props.actionspace){
+    if(label && props.actionspace && props.stage.getCamera()){
         updateLabelPosition( props.actionspace,label);
 
         unwatchPos = watch(props.actionspace.getObject3D().position,()=>{
@@ -74,6 +74,13 @@ onMounted(()=>{
                 updateLabelPosition( props.actionspace,label);
             });
         })
+
+        watch(()=>props.stage.getCamera().position,()=>{
+            updateLabelPosition( props.actionspace,label);
+       
+        })
+
+
     }else{
         updateToPosition(label!, window.innerWidth/2 - 100, window.innerHeight/2 - 150);
     }
@@ -100,13 +107,13 @@ function updateLabelPosition(actionspace:ActionSpaceRoomNode, labelElement:HTMLE
     const vector = new THREE.Vector3();
     actionspace.getObject3D().getWorldPosition(vector);
     
-    vector.project(props.camera.value);
+    vector.project(props.stage.getCamera().value);
 
     const widthHalf = window.innerWidth / 2;
     const heightHalf = window.innerHeight / 2;
 
-    labelElement.style.left = (vector.x * widthHalf + widthHalf) - 100 + 'px';
-    labelElement.style.top = -(vector.y * heightHalf - heightHalf) - 150 + 'px';
+    labelElement.style.left = (vector.x * widthHalf + widthHalf) - 200 + 'px';
+    labelElement.style.top = -(vector.y * heightHalf - heightHalf) - 250 + 'px';
 }
 
 function updateToPosition(labelElement:HTMLElement, left:number, top:number){
@@ -124,6 +131,7 @@ function setAction(action:{type:ActionType,name:string}){
 function setReaction(reaction:{type:ReactionType,name:string}){
     currentReactionType.value = reaction.type;
     (props.interactionManager as InteractionManager).createReactionByType(reaction.type,(props.actionspace as ActionSpaceRoomNode))
+
 }
 
 </script>
