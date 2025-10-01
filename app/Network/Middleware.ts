@@ -81,7 +81,6 @@ export default class Middleware implements IRoomNodePublisher, IInteractionPubli
 		this.writeLog(msg.fromMsgType(msg.getType()) + " " + msg.fromMsgMethod(msg.getMethod()), msg, true);
 
 		let isOwnRequest = this.m_ownRequests.get(msg.getUID());
-		console.log(isOwnRequest);
 		
 		if (isOwnRequest) {
 			this.m_ownRequests.delete(msg.getUID());
