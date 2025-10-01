@@ -19,7 +19,6 @@
 import type IInteractionPublisher from "../Network/IInteractionPublisher";
 import type ReactionBase from "./ReactionBase";
 import FollowingLightReaction from "./Reactions/FollowingLightReaction";
-import type RoomNodeBase from "../RoomNodes/RoomNodeBase";
 import { RoomNodeType } from "../RoomNodes/RoomNodeRegistry";
 
 export enum ReactionType {

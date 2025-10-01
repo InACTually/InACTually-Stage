@@ -38,7 +38,7 @@
 
     <!-- panel title / toggle -->
     <div class="dynamic_panel_wrapper dynamic_panel_content">
-      <div class="reaction" @click="expand = !expand">
+      <div class="reaction" @click="expand = !expand" id="selected_reaction">
         <span class="indicator" :class="{ filled: expand }"></span>
         <i :class="reactionTypeIcons[currentReactionType]" style="margin-right: 6px; font-size: 2rem"></i>
       </div>
@@ -51,6 +51,25 @@ import { ref } from "vue";
 import { ReactionType } from "~/app/Interactions/ReactionRegistry";
 
 let expand = defineModel<boolean>();
+let { setDraggable } = useDragAndDrop();
+
+
+onMounted(()=>{
+  
+        let element = document.getElementById("#selected_reaction");
+        if(element)
+        setDraggable(
+            element,
+            "selected_reaction",
+            (event:any)=>{
+                 
+            },
+            (event:any)=>{
+                 
+            }
+        )
+})
+
 
 const props = defineProps<{
   reactions: { name: string; type: ReactionType }[];

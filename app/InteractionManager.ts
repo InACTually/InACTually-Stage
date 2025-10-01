@@ -24,8 +24,9 @@ import type RoomManager from "./RoomManager";
 import type ActionSpaceRoomNode from "./RoomNodes/ActionSpace/ActionSpaceRoomNode";
 
 export interface IInteraction {
-	action: ActionBase | undefined,
-	reaction: ReactionBase | undefined
+	uid:string,
+	actions: ActionBase[],
+	reactions: ReactionBase[],
 }
 
 export default class InteractionManager {
@@ -35,7 +36,7 @@ export default class InteractionManager {
 
 	private m_actions: ActionBase[] = reactive([]);
 	private m_reactions: ReactionBase[] = reactive([]);
-	private m_interactions = reactive(new Map<string, IInteraction>()); // maps actionspace uid to interaction interface 
+	private m_interactions = reactive(new Map<string, IInteraction[]>()); // maps actionspace uid to interaction interface 
 
 	private m_publisher = {} as IInteractionPublisher;
 
@@ -59,8 +60,20 @@ export default class InteractionManager {
 		return this.m_reactions.find((r: ReactionBase) => r.getUID() == uid);
 	}
 
-	getInteractionByUID(uid: string): IInteraction | undefined {
+	getInteractionsByActionSpace(uid: string): IInteraction[] | undefined {
 		return this.m_interactions.get(uid);
+	}
+
+	getInteractionByUID(uid: string): IInteraction | undefined {
+		let interaction = undefined as IInteraction | undefined;
+		this.m_interactions.forEach((interactions: IInteraction[]) => {
+			interactions.forEach((i: IInteraction) => {
+				if (i.uid == uid) {
+					interaction = i;
+				}
+			});
+		});
+		return interaction;
 	}
 
 	createActionByType(type: ActionType, actionSpace: ActionSpaceRoomNode): ActionBase | undefined {
@@ -69,16 +82,6 @@ export default class InteractionManager {
 		if (Action) {
 			action = new Action(this.m_publisher);
 			this.m_actions.push(action);
-			console.log("[InteractionManger] created action", action);
-
-			let interaction = this.m_interactions.get(actionSpace.getUID());
-
-			if (interaction == undefined) {
-				interaction = this.createInteraction(actionSpace, action);
-			}  
-			
-			interaction.action = action;
-			console.log("[InteractionManager] current Interaction: " , interaction);
 		}
 		return action;
 	}
@@ -90,29 +93,8 @@ export default class InteractionManager {
 			reaction = new Reaction(this.m_publisher);
 			this.m_reactions.push(reaction);
 			console.log("[InteractionManger] created reaction", reaction);
-
-			let interaction = this.m_interactions.get(actionSpace.getUID());
-
-			if (interaction == undefined) {
-				interaction = this.createInteraction(actionSpace, undefined, reaction);
-			}  
-
-			interaction.reaction = reaction;
-			console.log("[InteractionManager] current Interaction: " , interaction);
+ 
 		}
-		// let reactionRoomNodeTypes = ReactionRoomNodeMap.get(type);
-
-		// if (reactionRoomNodeTypes) {
-		//     if (reactionRoomNodeTypes.includes(roomNode.getRoomNodeType())) {
-		//         let Reaction = ReactionRegistry.get(type);
-		//         if (Reaction) {
-		//             reaction = new Reaction(this.m_publisher, roomNode);
-		//             this.m_reactions.push(reaction);
-		//             console.log("[InteractionManger] created reaction", reaction);
-		//         }
-		//     }
-		// }
-
 
 		return reaction;
 	}
@@ -156,11 +138,24 @@ export default class InteractionManager {
 		}
 	}
 
-	createInteraction(actionSpace: ActionSpaceRoomNode, action?: ActionBase, reaction?: ReactionBase, condition?: any): IInteraction {
+	createInteraction(actionSpace: ActionSpaceRoomNode, action?: ActionBase, reaction?: ReactionBase): IInteraction {
 		if (!this.m_interactions.has(actionSpace.getUID()))
-			this.m_interactions.set(actionSpace.getUID(), { action: action, reaction: reaction });
+			this.m_interactions.set(actionSpace.getUID(), [] as IInteraction[]);
 
-		return this.m_interactions.get(actionSpace.getUID())!;
+
+		let interactions =  this.m_interactions.get(actionSpace.getUID())!;
+		let interaction: IInteraction = { uid:this.m_publisher.createUID(), actions: [], reactions: [] };
+		
+		if(action)
+			interaction.actions.push(action);
+		if(reaction)
+			interaction.reactions.push(reaction);
+
+		interactions.push(interaction);
+		
+		this.m_interactions.set(actionSpace.getUID(), interactions);
+
+		return interaction;
 	}
 
 	deleteInteractionByUID(uid: string) {

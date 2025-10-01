@@ -65,7 +65,7 @@ onMounted(()=>{
         });
 
         watch(()=>(props.actionspace as ActionSpaceRoomNode).getUID(),()=>{
-            setCurrentInteraction();
+     
             updateLabelPosition( props.actionspace,label);
             if(unwatchPos)
                 unwatchPos();
@@ -84,24 +84,26 @@ onMounted(()=>{
     }else{
         updateToPosition(label!, window.innerWidth/2 - 100, window.innerHeight/2 - 150);
     }
-    setCurrentInteraction();
-
 })
 
-function setCurrentInteraction(){
-    currentInteraction.value = (props.interactionManager as InteractionManager).createInteraction((props.actionspace as ActionSpaceRoomNode));
-    if(currentInteraction.value.action){
-        currentActionType.value = currentInteraction.value.action.getType();
-    }else{
-        currentActionType.value = ActionType.AT_UNKNOWN;
-    }
 
-    if(currentInteraction.value.reaction){
-        currentReactionType.value = currentInteraction.value.reaction.getType();
-    }else{
-        currentReactionType.value = ReactionType.RT_UNKNOWN;
-    }
-}
+//TODO: how to add interaction
+
+// function setCurrentInteraction(){
+//     currentInteraction.value = (props.interactionManager as InteractionManager).createInteraction((props.actionspace as ActionSpaceRoomNode));
+    
+//     if(currentInteraction.value.actions){
+//         currentActionType.value = currentInteraction.value.action.getType();
+//     }else{
+//         currentActionType.value = ActionType.AT_UNKNOWN;
+//     }
+
+//     if(currentInteraction.value.reactions){
+//         currentReactionType.value = currentInteraction.value.reaction.getType();
+//     }else{
+//         currentReactionType.value = ReactionType.RT_UNKNOWN;
+//     }
+// }
 
 function updateLabelPosition(actionspace:ActionSpaceRoomNode, labelElement:HTMLElement) {
     const vector = new THREE.Vector3();
@@ -117,7 +119,6 @@ function updateLabelPosition(actionspace:ActionSpaceRoomNode, labelElement:HTMLE
 }
 
 function updateToPosition(labelElement:HTMLElement, left:number, top:number){
-     
     labelElement.style.left = left + 'px';
     labelElement.style.top = top + 'px';
 }
@@ -125,13 +126,14 @@ function updateToPosition(labelElement:HTMLElement, left:number, top:number){
 
 function setAction(action:{type:ActionType,name:string}){
     currentActionType.value = action.type;
-    (props.interactionManager as InteractionManager).createActionByType(action.type,(props.actionspace as ActionSpaceRoomNode))
-}
+    let a = (props.interactionManager as InteractionManager).createActionByType(action.type,(props.actionspace as ActionSpaceRoomNode))
+    currentInteraction.value?.actions.push(a!);
+ }
 
 function setReaction(reaction:{type:ReactionType,name:string}){
     currentReactionType.value = reaction.type;
-    (props.interactionManager as InteractionManager).createReactionByType(reaction.type,(props.actionspace as ActionSpaceRoomNode))
-
+    let r = (props.interactionManager as InteractionManager).createReactionByType(reaction.type,(props.actionspace as ActionSpaceRoomNode))
+    currentInteraction.value?.reactions.push(r!); 
 }
 
 </script>

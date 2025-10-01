@@ -24,7 +24,7 @@ export default abstract class ReactionBase {
 
 	protected m_name = "";
 	protected m_uid = "";
-	protected m_roomNode = {} as RoomNodeBase;
+	protected m_roomNodes = [] as RoomNodeBase[];
  	protected m_description = "";
 	
 	protected m_publisher = {} as IInteractionPublisher;
@@ -32,8 +32,6 @@ export default abstract class ReactionBase {
 
 	constructor(publisher: IInteractionPublisher) {
 		this.m_publisher = publisher;
-
-
 	}
 
 
@@ -43,6 +41,20 @@ export default abstract class ReactionBase {
 
 	public abstract toJson(): any;
 	public abstract fromJson(params: any, publish: boolean): void;
+
+
+	addRoomNode(roomNode: RoomNodeBase) {
+		this.m_roomNodes.push(roomNode);
+	}
+	removeRoomNode(roomNode: RoomNodeBase) {
+		const index = this.m_roomNodes.indexOf(roomNode);
+		if (index > -1) {
+			this.m_roomNodes.splice(index, 1);
+		}
+	}
+	getRoomNodes(): RoomNodeBase[] {
+		return this.m_roomNodes;
+	}
 
 	setUID(uid: string) {
 		this.m_uid = uid;
