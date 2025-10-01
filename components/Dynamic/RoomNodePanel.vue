@@ -88,8 +88,10 @@ onMounted(() => {
 })
 
 function addRoomNode(roomNodeType:RoomNodeType, position:THREE.Vector3){
+    
+    
     let roomNode = props.roomManager.createRoomNodeByType(roomNodeType,undefined,position);
-    }
+}
 
 watch(guiState, () => {
     if (guiState.value == GUIState.GS_SETUP) {
