@@ -35,7 +35,7 @@ export default class InteractionManager {
 
 	private m_actions: ActionBase[] = reactive([]);
 	private m_reactions: ReactionBase[] = reactive([]);
-	private m_interactions: Map<string, IInteraction> = reactive(new Map<string, IInteraction>()); // maps actionspace uid to interaction interface 
+	private m_interactions = reactive(new Map<string, IInteraction>()); // maps actionspace uid to interaction interface 
 
 	private m_publisher = {} as IInteractionPublisher;
 
@@ -73,11 +73,12 @@ export default class InteractionManager {
 
 			let interaction = this.m_interactions.get(actionSpace.getUID());
 
-			if (interaction) {
-				interaction.action = action
-			} else {
+			if (interaction == undefined) {
 				interaction = this.createInteraction(actionSpace, action);
-			}
+			}  
+			
+			interaction.action = action;
+			console.log("[InteractionManager] current Interaction: " , interaction);
 		}
 		return action;
 	}
@@ -92,12 +93,12 @@ export default class InteractionManager {
 
 			let interaction = this.m_interactions.get(actionSpace.getUID());
 
-			if (interaction) {
-				interaction.reaction = reaction
-			} else {
-				this.createInteraction(actionSpace, undefined, reaction);
-			}
+			if (interaction == undefined) {
+				interaction = this.createInteraction(actionSpace, undefined, reaction);
+			}  
 
+			interaction.reaction = reaction;
+			console.log("[InteractionManager] current Interaction: " , interaction);
 		}
 		// let reactionRoomNodeTypes = ReactionRoomNodeMap.get(type);
 
