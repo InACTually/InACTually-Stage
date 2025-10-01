@@ -25,7 +25,8 @@ export default abstract class ReactionBase {
 	protected m_name = "";
 	protected m_uid = "";
 	protected m_roomNode = {} as RoomNodeBase;
-
+ 	protected m_description = "";
+	
 	protected m_publisher = {} as IInteractionPublisher;
 	protected m_type = ReactionType.RT_UNKNOWN;
 

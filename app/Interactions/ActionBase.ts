@@ -25,7 +25,8 @@ export default abstract class ActionBase {
 
 	protected m_name = "";
 	protected m_uid = "";
-
+ 	protected m_description = "";
+	
 	protected m_publisher = {} as IInteractionPublisher;
 	protected m_reaction = {} as ReactionBase;
 	protected m_type = ActionType.AT_UNKNOWN;

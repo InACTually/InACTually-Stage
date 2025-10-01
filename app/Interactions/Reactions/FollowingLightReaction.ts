@@ -24,6 +24,8 @@ export default class FollowingLightReaction extends ReactionBase {
 		super(publisher);
 		this.setup();
 		this.m_type = ReactionType.RT_FOLLOWING_LIGHT;
+		this.m_name = "Following Light Reaction";
+		this.m_description = "A set of lights follows a human in the room.";
 	}
 
 	public override setup(): void {

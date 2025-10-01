@@ -28,6 +28,8 @@ export default class MovementAction extends ActionBase {
 		super(publisher);
 		this.setup();
 		this.m_type = ActionType.AT_MOVEMENT;
+		this.m_name = "Movement Action";
+		this.m_description = "Detects movement in the room.";
 	}
 
 	public override setup(): void {
