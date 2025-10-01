@@ -79,7 +79,6 @@ function setReaction(reaction: { type: ReactionType; name: string }) {
 .dynamic_panel {
   width: 100%;
   max-width: 300px;
-   
   display: flex;
   flex-direction: column-reverse;
   justify-content: start;
@@ -88,10 +87,9 @@ function setReaction(reaction: { type: ReactionType; name: string }) {
   padding: vars.$padding;
 
   .dynamic_panel_content {
-    width: 90%;
-    max-height: 700px;
-    overflow: hidden;
+    width:100%;
     transition: max-height 0.3s ease-out;
+
 
     .reaction {
       background-color: vars.$semiTransparentColor;
@@ -99,16 +97,17 @@ function setReaction(reaction: { type: ReactionType; name: string }) {
       border-radius: 10px;
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
-      margin-bottom: vars.$padding;
+      margin: vars.$padding;
       padding: vars.$padding;
       cursor: pointer;
       display: flex;
       justify-content: center;
       align-items: center;
-    
       &.row {
         flex-direction: row;
-       
+        flex-wrap: wrap;
+        justify-content:space-between;
+        align-items:center;
       }
       &:hover {
         background-color: vars.$backgroundColor;
@@ -125,17 +124,7 @@ function setReaction(reaction: { type: ReactionType; name: string }) {
     min-height: 30px;
     padding: vars.$padding;
     cursor: pointer;
-
-    .indicator {
-      height: 10px;
-      width: 10px;
-      border: solid vars.$borderWidth vars.$borderColor;
-      border-radius: 50%;
-
-      &.filled {
-        background-color: vars.$borderColor;
-      }
-    }
+ 
   }
 }
 </style>
