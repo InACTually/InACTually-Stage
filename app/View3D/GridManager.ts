@@ -13,6 +13,7 @@
 
 	contributors:
 	Fabian Töpfer - baniaf@uber.space
+	Anton Hörig - dev@antonhoerig.de
 */
 
 import * as THREE from "three";
