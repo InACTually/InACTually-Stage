@@ -56,16 +56,18 @@ let { setDraggable } = useDragAndDrop();
 
 onMounted(()=>{
   
-        let element = document.getElementById("#selected_reaction");
+        let element = document.getElementById("selected_reaction");
+
+        console.log(element)
         if(element)
         setDraggable(
             element,
             "selected_reaction",
             (event:any)=>{
-                 
+                 console.log("drag reaction" + event);
             },
             (event:any)=>{
-                 
+                 console.log("drop reaction" + event);
             }
         )
 })
