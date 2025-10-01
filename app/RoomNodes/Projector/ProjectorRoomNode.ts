@@ -217,6 +217,10 @@ export default class ProjectorRoomNode extends RoomNodeBase {
 			this.m_frustum.layers.set(2);
 	}
 
+	public resetCorrespondences(): void {
+		this.publishParams({ ["resetCorrespondences"]: true })
+	}
+
 	public publishObjectPoint(point: {x: number, y: number, z: number}): void {
 		if(this.m_isCalibrating)
 			this.publishParams({ ["objectPoint"]: point })

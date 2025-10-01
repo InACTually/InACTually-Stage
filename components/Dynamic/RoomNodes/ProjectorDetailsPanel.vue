@@ -19,10 +19,6 @@
         <CommonInput class="input" v-model="resolution.x" labelText="" type="number" @onUserChange="updateResolution()" />
         <CommonInput class="input" v-model="resolution.y" labelText="" type="number" @onUserChange="updateResolution()" />
     </CommonPanelRow>
-    <CommonPanelRow class="input_row" @click="updateIsCalibrating()">
-        <h6>Listen for Correspondences     </h6>
-        <h6>{{isCalibrating}}</h6>
-    </CommonPanelRow>
     <CommonPanelRow class="input_row">
         <h6>Focal Length / Pixel</h6>
         <CommonInput class="input" v-model="focalLengthPixel.x" labelText="" type="number" @onUserChange="updateFocalLengthPixel()" />
@@ -36,6 +32,13 @@
         <h6>Principal Point</h6>
         <CommonInput class="input" v-model="principalPoint.x" labelText="" type="number" @onUserChange="updatePrincipalPoint()" />
         <CommonInput class="input" v-model="principalPoint.y" labelText="" type="number" @onUserChange="updatePrincipalPoint()" />
+    </CommonPanelRow>
+    <CommonPanelRow class="input_row" @click="updateIsCalibrating()">
+        <h6>Listen for Correspondences.....</h6>
+        <h6>{{isCalibrating}}</h6>
+    </CommonPanelRow>
+    <CommonPanelRow class="input_row" @click="resetCorrespondences()">
+        <h6>Reset Correspondences</h6>
     </CommonPanelRow>
     <CommonPanelRow class="input_row">
         <h6>Test Object Point</h6>
@@ -120,17 +123,6 @@ watch(() => resolution.value.y, (newValue: any, oldValue: any) => {
     resolution.value.y = Number(newValue.toFixed(0));
 })
 
-/*************          IsCalibrating          *********/
-// From Node To UI
-function setIsCalibrating() {
-    isCalibrating.value = rawSelectedRoomNode.value.getIsCalibrating().value;
-}
-
-//From UI to Node
-function updateIsCalibrating() {
-    isCalibrating.value = !isCalibrating.value;
-    rawSelectedRoomNode.value.setIsCalibrating(isCalibrating.value);
-}
 //*************          Focal Length Pixel          *********/
 // From Node To UI
 function setFocalLengthPixel() {
@@ -201,6 +193,23 @@ watch(() => principalPoint.value.y, (newValue: any, oldValue: any) => {
     }
     principalPoint.value.y = Number(newValue.toFixed(2));
 })
+
+/*************          IsCalibrating          *********/
+// From Node To UI
+function setIsCalibrating() {
+    isCalibrating.value = rawSelectedRoomNode.value.getIsCalibrating().value;
+}
+
+//From UI to Node
+function updateIsCalibrating() {
+    isCalibrating.value = !isCalibrating.value;
+    rawSelectedRoomNode.value.setIsCalibrating(isCalibrating.value);
+}
+
+/*************          Reset Correspondences          *********/
+function resetCorrespondences() {
+    rawSelectedRoomNode.value.resetCorrespondences();
+}
 
 /*************          Test Object Point          *********/
 function publishTestObjectPoint() {
