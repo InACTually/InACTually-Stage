@@ -23,7 +23,6 @@
             <LayoutLeftPanel :app="app" class="gui_left_panel"></LayoutLeftPanel>
             <LayoutRightPanel :app="app" class="gui_right_panel"></LayoutRightPanel>
             <StaticActionBar></StaticActionBar>  
-
             <DynamicInteractionsInteractionPanel 
                 v-if="showInteractionPanel()" 
                 :interactionManager="app.interactionManager"
@@ -49,7 +48,8 @@ let {guiState} = useGUIState();
 
 function showInteractionPanel():boolean{
    
-    if(props.app.UI3D.selectedRoomNode && guiState.value == GUIState.GS_CONFIG){
+    if(props.app.UI3D.selectedRoomNode){
+
         if(props.app.UI3D.selectedRoomNode!.getRoomNodeType() == RoomNodeType.RNT_ACTIONSPACE)
             return true;
     } 
