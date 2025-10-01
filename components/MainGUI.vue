@@ -22,7 +22,7 @@
             <StaticHeader :app="app" class="gui_top_panel"></StaticHeader>
             <LayoutLeftPanel :app="app" class="gui_left_panel"></LayoutLeftPanel>
             <LayoutRightPanel :app="app" class="gui_right_panel"></LayoutRightPanel>
-            <StaticActionBar></StaticActionBar>  
+            <!-- <StaticActionBar></StaticActionBar>   -->
             <DynamicInteractionsInteractionPanel 
                 v-if="showInteractionPanel()" 
                 :interactionManager="app.interactionManager"
