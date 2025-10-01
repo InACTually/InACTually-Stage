@@ -27,13 +27,14 @@
                 v-if="showInteractionPanel()" 
                 :interactionManager="app.interactionManager"
                 :actionspace="props.app.UI3D.selectedRoomNode" 
-                :camera=" props.app.roomManager.stage.getCamera()">
+                :stage=" props.app.roomManager.stage">
             </DynamicInteractionsInteractionPanel>
         </section>
     </article>
 </template>
 <script lang="ts" setup>
 import App from '~/app/App';
+import type RoomNodeBase from '~/app/RoomNodes/RoomNodeBase';
 import { RoomNodeType } from '~/app/RoomNodes/RoomNodeRegistry';
 
 const props = defineProps({
@@ -43,14 +44,12 @@ const props = defineProps({
     }
 });
 
-let {guiState} = useGUIState();
-
 
 function showInteractionPanel():boolean{
    
     if(props.app.UI3D.selectedRoomNode){
 
-        if(props.app.UI3D.selectedRoomNode!.getRoomNodeType() == RoomNodeType.RNT_ACTIONSPACE)
+        if((props.app.UI3D.selectedRoomNode! as RoomNodeBase).getRoomNodeType() == RoomNodeType.RNT_ACTIONSPACE)
             return true;
     } 
     return false;
