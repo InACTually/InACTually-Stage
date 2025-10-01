@@ -134,10 +134,29 @@ export default class RoomManager {
 	}
 
 	public createRoomNodeByType(type: RoomNodeType, uid?: string, position: THREE.Vector3 = new THREE.Vector3(0, 1, 0), orientation: THREE.Quaternion = new THREE.Quaternion(), params?: any): RoomNodeBase | undefined {
+		
+		let found = undefined;
+
+		this.getAllRoomNodes().forEach((rns: RoomNodeBase[]) => {
+			
+			rns.forEach((r) => {	
+				if(r.getUID() == uid){
+					found = rns;
+				}}
+			);
+		});
+
+		if(found){
+			return found;
+		}
+
 		let roomNodeManager = this.getRoomNodeMgrByRoomNodeType(type);
 		if (roomNodeManager === undefined) {
 			return undefined;
 		}
+		
+		//uid = uid ? uid : this.m_publisher.createUID();
+
 		return roomNodeManager.createRoomNode(uid, position, orientation, params);
 	}
 
