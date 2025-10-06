@@ -20,7 +20,7 @@ export default class XRHandGestures {
     private m_hand = {} as THREE.XRHandSpace;
 
     private m_closeGestureActive: boolean = false;
-    static readonly closeThreshold = 0.1;
+    static readonly closeThreshold = 0.09;
     static readonly openThreshold = 0.14;
     private m_closeGestureTriggered: ((position: THREE.Vector3, orientation: THREE.Quaternion) => any) | undefined;
     private m_closeGestureHeld: ((position: THREE.Vector3, orientation: THREE.Quaternion) => any) | undefined;
@@ -71,8 +71,10 @@ export default class XRHandGestures {
         let wrist = this.m_hand.joints["wrist"];
 		let middleFingerDistal = this.m_hand.joints["middle-finger-phalanx-distal"];
 		let ringFingerDistal = this.m_hand.joints["ring-finger-phalanx-distal"];
+		let indexFingerDistal = this.m_hand.joints["index-finger-phalanx-distal"];
 
-		if(!wrist || !middleFingerDistal || !ringFingerDistal) 
+
+		if(!wrist || !middleFingerDistal || !ringFingerDistal || !indexFingerDistal) 
             return;
 
         const wristPosition = wrist.getWorldPosition(new THREE.Vector3());
@@ -81,10 +83,12 @@ export default class XRHandGestures {
         const middleFingerDistalOrientation = middleFingerDistal.getWorldQuaternion(new THREE.Quaternion())
         const ringFingerDistalPosition = ringFingerDistal.getWorldPosition(new THREE.Vector3());
         const ringFingerDistalOrientation = ringFingerDistal.getWorldQuaternion(new THREE.Quaternion())
+        const indexFingerDistalPosition = indexFingerDistal.getWorldPosition(new THREE.Vector3());
+        const indexFingerDistalOrientation = indexFingerDistal.getWorldQuaternion(new THREE.Quaternion())
 
         
         //check if gesture should end
-        let distance = (wristPosition.distanceTo(middleFingerDistalPosition) + wristPosition.distanceTo(ringFingerDistalPosition)) / 2;
+        let distance = (wristPosition.distanceTo(middleFingerDistalPosition) + wristPosition.distanceTo(ringFingerDistalPosition) + wristPosition.distanceTo(indexFingerDistalPosition)) / 3;
         if(distance <= XRHandGestures.closeThreshold) {
             if (!this.m_closeGestureActive){
                 this.m_closeGestureActive = true;
