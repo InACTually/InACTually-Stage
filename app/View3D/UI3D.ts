@@ -50,10 +50,6 @@ export default class UI3D {
 	private m_hand0Gestures = {} as XRHandGestures;
 	private m_hand1Gestures = {} as XRHandGestures;
 
-	//private m_xrHand0MoveReferenceSpace = false;
-	//private m_xrHand1MoveReferenceSpace = false;
-	//private m_xrHandStartOffsetToOrigin = new THREE.Vector3();
-
 	private m_newXROrigin: THREE.Vector3 | null = null;
 
 
@@ -74,7 +70,6 @@ export default class UI3D {
 		this.m_xr = this.m_roomManager.stage.getXR()!;
 		this.setupListeners()
 
-		let yo = this.m_roomManager.stage.getDOMElement();
 		this.orbitControls = new OrbitControls(this.m_roomManager.stage.getCamera().value, this.m_roomManager.stage.getDOMElement());
 		this.m_prevOrbitDistance = this.orbitControls.getDistance();
 
@@ -470,91 +465,5 @@ export default class UI3D {
 		this.m_xrreferenceSpaceHandle.position.set(0, 0,0 );
 		this.m_xrreferenceSpaceHandle.setRotationFromQuaternion(new THREE.Quaternion());
 	}
-
-	/*
-	private hand0PinchTriggered(position: THREE.Vector3, orientation: THREE.Quaternion){
-		//if proximity to origin(0,0,0) < min DIstance (1cm)
-		//safe porsition and rotation offste
-		if (position.length() < 0.1 && !this.m_xrHand0MoveReferenceSpace && !this.m_xrHand1MoveReferenceSpace) {
-			this.baseRefSpace = this.m_xr.getReferenceSpace();
-			this.m_xrHandStartOffsetToOrigin.copy(position);
-			this.m_xrHand0MoveReferenceSpace = true;
-		}
-	}
-
-	private hand1PinchTriggered(position: THREE.Vector3, orientation: THREE.Quaternion){
-		//if proximity to origin(0,0,0) < min DIstance (1cm)
-		//safe porsition and rotation offste
-		if (position.length() < 0.1 && !this.m_xrHand0MoveReferenceSpace && !this.m_xrHand1MoveReferenceSpace) {
-			this.baseRefSpace = this.m_xr.getReferenceSpace();
-			this.m_xrHandStartOffsetToOrigin.copy(position);
-			this.m_xrHand1MoveReferenceSpace = true;
-		}
-	}
-
-	private hand0PinchHeld(position: THREE.Vector3, orientation: THREE.Quaternion){
-		//check if draggin
-		if (this.m_xrHand0MoveReferenceSpace)
-			this.moveReferenceSpaceHandle(position, orientation, 0)
-	}
-
-	private hand1PinchHeld(position: THREE.Vector3, orientation: THREE.Quaternion){
-		//check if dragging
-		if (this.m_xrHand1MoveReferenceSpace)
-			this.moveReferenceSpaceHandle(position, orientation, 1)
-	}
-
-	private hand0PinchReleased(){
-		if (this.m_xrHand0MoveReferenceSpace){
-			this.m_xrHand0MoveReferenceSpace = false;
-			this.applyReferenceSpaceTransform();
-		}
-
-	}
-
-	private hand1PinchReleased(){
-		if (this.m_xrHand1MoveReferenceSpace){
-			this.m_xrHand1MoveReferenceSpace = false;
-			this.applyReferenceSpaceTransform();
-		}
-	}
-
-	private moveReferenceSpaceHandle(position: THREE.Vector3, orientation: THREE.Quaternion, hand: number){
-		this.m_xrreferenceSpaceHandle.position.copy(position);
-
-		//ensure y is always pointitng up
-		const z = new THREE.Vector3(0, 0, 1).applyQuaternion(orientation).normalize();
-		z.y = 0;
-		z.normalize()
-		const y = new THREE.Vector3(0, 1, 0);
-		const x = y.clone().cross(z).normalize();
-
-		const rotMatrix = new THREE.Matrix4();
-		rotMatrix.makeBasis(x, y, z); 
-
-		const quat = new THREE.Quaternion().setFromRotationMatrix(rotMatrix);
-
-		this.m_xrreferenceSpaceHandle.quaternion.copy(quat);
-	}
-
-	private applyReferenceSpaceTransform(){
-		if (!this.baseRefSpace) 
-			return;
-		
-		let worldPos = this.m_xrreferenceSpaceHandle.getWorldPosition(new THREE.Vector3());
-		let worldQuat = this.m_xrreferenceSpaceHandle.getWorldQuaternion(new THREE.Quaternion());
-		
-		const transform = new XRRigidTransform(
-		  { x: worldPos.x, y: worldPos.y, z: worldPos.z },
-		  { x: worldQuat.x, y: worldQuat.y, z: worldQuat.z, w: worldQuat.w }
-		);
-		
-		const offsetSpace = this.baseRefSpace.getOffsetReferenceSpace(transform);
-		this.m_xr.setReferenceSpace(offsetSpace);
-
-		this.m_xrreferenceSpaceHandle.position.set(0, 0,0 );
-		this.m_xrreferenceSpaceHandle.setRotationFromQuaternion(new THREE.Quaternion());
-	}
-	*/
 
 }
