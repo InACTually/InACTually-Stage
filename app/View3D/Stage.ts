@@ -22,6 +22,7 @@ import RoomModelManager, { ModelMode } from "./RoomModelManager";
 import GridManager, { GridMode } from "./GridManager";
 import ProjectionManager from "./ProjectionManager";
 import { ShadowMapViewer } from 'three/addons/utils/ShadowMapViewer.js';
+import GaussianSplatManager from "./GaussianSplatManager.client";
 
 export default class Stage {
 	private m_lightColor = new THREE.Color(0xf1f1f1);
@@ -41,6 +42,9 @@ export default class Stage {
 
 	public lightShadowMapViewer = {} as ShadowMapViewer;
 
+	private m_gaussianSplatManager = undefined as GaussianSplatManager | undefined;
+
+
 	constructor(container: THREE.Object3D) {
 		this.setup(container);
 	}
@@ -55,8 +59,6 @@ export default class Stage {
 		this.gridManager = new GridManager(this.m_scene);
 		this.projectionManager = new ProjectionManager();
 		this.roomModelManager = new RoomModelManager(this.m_scene, this.size)
-
-
 
 		// const sdf = this.createTestSDF();
 		// this.m_scene.add(sdf);
@@ -103,6 +105,7 @@ export default class Stage {
 		axesHelper.position.set(0, 0.01, 0);
 		this.m_scene.add(axesHelper);
 
+		
 
 	}
 
@@ -184,6 +187,10 @@ export default class Stage {
 		return this.m_renderer?.getXR();
 	}
 
+	public getGaussianSplatManager(){
+		return this.m_gaussianSplatManager;
+	}
+
 	public getScene() {
 		return this.m_scene;
 	}
@@ -230,15 +237,33 @@ export default class Stage {
 	public switchProjection() {
 		this.projectionManager.setIsOrthographicProjection(!this.projectionManager.getIsOrthographicProjection());
 	}
-
-	public draw(canvas: HTMLElement, drawCB: () => void) {
-		this.m_renderer = new Renderer(canvas);
-		this.m_renderer.draw(drawCB, this.getScene(), this.projectionManager.getCurrentCamera(), this.lightShadowMapViewer);
-
-		//needs to be called again after shadow map is initialized
-		this.roomModelManager.setShadowMapParams(this.dirLight.shadow);
-
+	public async setupGaussianSplatManager(){
+		this.m_gaussianSplatManager = await GaussianSplatManager.create(this.m_renderer!.getRenderer(), this.getScene(),this.projectionManager.getCurrentCamera() )
+	
+		var splat = this.m_gaussianSplatManager.load({
+			id: "stage-environment",
+			url: "/models/Stage_Garnisionskirche_11-03-26_FT_cleaned.ply",
+			position: new THREE.Vector3(0, 0, 0),
+			quaternion: new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0,0,1), Math.PI),
+			scale:1,
+			lod: false,   // Level-of-Detail empfohlen für große Szenen
+		});
 	}
+
+	public async draw(canvas: HTMLElement, drawCB: () => void) {
+		this.m_renderer = new Renderer(canvas);
+
+		await this.setupGaussianSplatManager();
+
+		this.m_renderer.draw(
+			drawCB,
+			this.getScene(),
+			this.projectionManager.getCurrentCamera(),
+			this.lightShadowMapViewer
+		);
+
+		this.roomModelManager.setShadowMapParams(this.dirLight.shadow);
+}
 
 	public update() {
 		// this.raymarchMat.uniforms.uCameraPosition.value.copy(this.getCamera().value.position);

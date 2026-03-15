@@ -21,6 +21,7 @@ import * as TWEEN from "@tweenjs/tween.js";
 import Stats from "three/examples/jsm/libs/stats.module.js";
 import { ShadowMapViewer } from 'three/addons/utils/ShadowMapViewer.js';
 import { XRButton } from 'three/addons/webxr/XRButton.js';
+import GaussianSplatManager from "./GaussianSplatManager.client";
 
 export default class Renderer {
 
@@ -29,6 +30,7 @@ export default class Renderer {
 
 	constructor(canvas: HTMLElement) {
 		this.setup(canvas);
+		
 	}
 
 
@@ -46,11 +48,10 @@ export default class Renderer {
 
 	public update() {
 
-	}
+	} 
 
 	public draw(drawCB: () => void, scene: THREE.Scene, camera: { value: THREE.Camera }, shadowMapViewer: ShadowMapViewer) {
 		this.m_renderer.render(scene, camera.value);
-
 
 		this.m_renderer.setAnimationLoop((dt) => {
 			this.m_stats.begin();
@@ -108,6 +109,10 @@ export default class Renderer {
 
 	public getXR() {
 		return this.m_renderer.xr;
+	}
+
+	public getRenderer(){
+		return this.m_renderer;
 	}
 
 	public getDOMElement() {
