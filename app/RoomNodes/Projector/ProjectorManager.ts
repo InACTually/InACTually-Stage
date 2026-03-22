@@ -67,6 +67,8 @@ export default class ProjectorManager extends RoomNodeManagerBase {
 	public override toJson(): any {
 		let json = { name: "Projector", roomNodes: [] as any[] };
 		json.roomNodes = this.m_roomNodes.map((roomNode: RoomNodeBase) => roomNode.toJson());
+
+		return json;
 	}
 
 	public override fromJson(json: any): void {

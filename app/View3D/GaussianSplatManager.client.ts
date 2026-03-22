@@ -46,6 +46,9 @@ export interface SplatLoadOptions {
 // ─── GaussianSplatManager ─────────────────────────────────────────────────────
 
 export default class GaussianSplatManager {
+	private static instance: GaussianSplatManager | null = null;
+	private static initPromise: Promise<GaussianSplatManager> | null = null;
+
 	private m_spark: SparkRenderer;
 	private m_scene: THREE.Scene;
 	private m_camera: { value: THREE.Camera };
@@ -74,26 +77,59 @@ export default class GaussianSplatManager {
 		);
 	}
 
-	public static async create(
+	public static async init(
 		threeRenderer: THREE.WebGLRenderer,
 		scene: THREE.Scene,
 		camera: { value: THREE.Camera },
 	): Promise<GaussianSplatManager> {
-		const spark = await loadSpark();
+		if (GaussianSplatManager.instance) {
+			return GaussianSplatManager.instance;
+		}
 
-		GaussianSplatManager.SparkRendererCtor = spark.SparkRenderer;
-		GaussianSplatManager.SplatMeshCtor = spark.SplatMesh;
+		if (GaussianSplatManager.initPromise) {
+			return GaussianSplatManager.initPromise;
+		}
 
-		const spark2 =
-			typeof (spark.SplatMesh.prototype as any).enableLod === "function";
+		GaussianSplatManager.initPromise = (async () => {
+			const spark = await loadSpark();
 
-		const sparkRenderer = new spark.SparkRenderer({
-			renderer: threeRenderer,
-			preUpdate: false,
-			autoUpdate: true,
-		});
+			GaussianSplatManager.SparkRendererCtor = spark.SparkRenderer;
+			GaussianSplatManager.SplatMeshCtor = spark.SplatMesh;
 
-		return new GaussianSplatManager(sparkRenderer, scene, camera, spark2);
+			const spark2 =
+				typeof (spark.SplatMesh.prototype as any).enableLod === "function";
+
+			const sparkRenderer = new spark.SparkRenderer({
+				renderer: threeRenderer,
+				preUpdate: false,
+				autoUpdate: true,
+			});
+
+			const manager = new GaussianSplatManager(
+				sparkRenderer,
+				scene,
+				camera,
+				spark2,
+			);
+
+			GaussianSplatManager.instance = manager;
+			return manager;
+		})();
+
+		return GaussianSplatManager.initPromise;
+	}
+
+	public static getInstance(): GaussianSplatManager {
+		if (!GaussianSplatManager.instance) {
+			throw new Error(
+				"GaussianSplatManager has not been initialized yet. Call GaussianSplatManager.init(...) first.",
+			);
+		}
+		return GaussianSplatManager.instance;
+	}
+
+	public static isInitialized(): boolean {
+		return GaussianSplatManager.instance !== null;
 	}
 
 	public load(options: SplatLoadOptions): SplatMesh {
@@ -138,11 +174,12 @@ export default class GaussianSplatManager {
 		mesh.position.copy(position);
 		mesh.quaternion.copy(quaternion);
 		mesh.scale.setScalar(scale);
-		
-		if(!this.m_scene.children.includes(this.getSparkRenderer()))
-			this.m_scene.add(this.getSparkRenderer());
 
- 		this.m_scene.add(mesh);
+		if (!this.m_scene.children.includes(this.getSparkRenderer())) {
+			this.m_scene.add(this.getSparkRenderer());
+		}
+
+		this.m_scene.add(mesh);
 		this.m_splats.set(id, { id, mesh });
 
 		console.log(`[GaussianSplatManager] Splat queued: ${id} → ${url}`);
@@ -188,6 +225,9 @@ export default class GaussianSplatManager {
 	public dispose(): void {
 		this.m_splats.forEach((_e, id) => this.remove(id));
 		this.m_camera.value.remove(this.m_spark);
+
+		GaussianSplatManager.instance = null;
+		GaussianSplatManager.initPromise = null;
 	}
 
 	public getSparkRenderer(): SparkRenderer {

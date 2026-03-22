@@ -70,8 +70,9 @@ export default class ActionSpaceManager extends RoomNodeManagerBase {
 	}
 
 	public override toJson(): any {
-		let json = { nodes: [] as any[] };
+		let json = { name:"Actionspace", nodes: [] as any[] };
 		json.nodes = this.m_roomNodes.map((roomNode: RoomNodeBase) => roomNode.toJson());
+		return json;
 	}
 
 	public override fromJson(json: any): void {

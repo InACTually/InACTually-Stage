@@ -79,6 +79,8 @@ export default class CameraManager extends RoomNodeManagerBase {
 	public override toJson(): any {
 		let json = { name: "Camera", roomNodes: [] as any[] };
 		json.roomNodes = this.m_roomNodes.map((roomNode: RoomNodeBase) => roomNode.toJson());
+
+		return json;
 	}
 
 	public override fromJson(json: any): void {

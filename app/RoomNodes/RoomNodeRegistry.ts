@@ -23,7 +23,8 @@ export enum RoomNodeType {
 	RNT_KINECT,
 	RNT_MOVINGHEAD,
 	RNT_BODY,
-	RNT_PROJECTOR
+	RNT_PROJECTOR,
+	RNT_OBJECT
 };
 
 const roomNodeNameToType = new Map<string, RoomNodeType>([
@@ -34,6 +35,7 @@ const roomNodeNameToType = new Map<string, RoomNodeType>([
 	["movinghead", RoomNodeType.RNT_MOVINGHEAD],
 	["body", RoomNodeType.RNT_BODY],
 	["projector", RoomNodeType.RNT_PROJECTOR],
+	["object", RoomNodeType.RNT_OBJECT]
 ]);
 
 const roomNodeTypeToName = new Map<RoomNodeType, string>(
@@ -63,7 +65,8 @@ export enum RoomNodeManagerType {
 	RNM_KINECT,
 	RNM_DMX,
 	RNM_BODY,
-	RNM_PROJECTOR
+	RNM_PROJECTOR,
+	RNM_OBJECT
 }
 
 const roomNodeCorrespondence = new Map<RoomNodeType, RoomNodeManagerType>([
@@ -73,6 +76,7 @@ const roomNodeCorrespondence = new Map<RoomNodeType, RoomNodeManagerType>([
 	[RoomNodeType.RNT_MOVINGHEAD, RoomNodeManagerType.RNM_DMX],
 	[RoomNodeType.RNT_BODY, RoomNodeManagerType.RNM_BODY],
 	[RoomNodeType.RNT_PROJECTOR, RoomNodeManagerType.RNM_PROJECTOR],
+	[RoomNodeType.RNT_OBJECT, RoomNodeManagerType.RNM_OBJECT],
 ]);
 
 

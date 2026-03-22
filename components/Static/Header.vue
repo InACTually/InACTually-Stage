@@ -28,6 +28,7 @@
             <div class="actions">
                 <div id="xrbuttoncontainer"> </div>
                 <!-- <h6 @click="switchProjection()">PROJECTION</h6> -->
+                <h6 @click="saveJson()">SAVE JSON</h6>
                 <h6 @click="switchGrid()">GRID</h6>
                 <h6 @click="switchModel()">MODEL</h6>
                 <h6 @click="switchTheme()">THEME</h6>
@@ -60,6 +61,9 @@ function connect(){
     props.app.connect();
 }
 
+function saveJson(){
+    props.app.saveRoomAsJson();
+}
 
 
 function switchModel(){

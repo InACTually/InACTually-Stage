@@ -62,8 +62,10 @@ export default class BodyManager extends RoomNodeManagerBase {
 	}
 
 	public override toJson(): any {
-		let json = { name: "body", roomNodes: [] as any[] };
+		let json = { name: "Body", roomNodes: [] as any[] };
 		json.roomNodes = this.m_roomNodes.map((roomNode: RoomNodeBase) => roomNode.toJson());
+	
+		return json;
 	}
 
 	public override fromJson(json: any): void {

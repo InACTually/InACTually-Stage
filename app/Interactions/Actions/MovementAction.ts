@@ -53,7 +53,11 @@ export default class MovementAction extends ActionBase {
 	}
 
 	public override toJson() {
-
+		return {
+			uid:this.m_uid,
+			type:this.m_type,
+			name:this.m_name
+		}
 	}
 
 	public override fromJson(params: any, publish: boolean): void {

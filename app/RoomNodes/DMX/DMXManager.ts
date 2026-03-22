@@ -75,6 +75,8 @@ export default class DMXManager extends RoomNodeManagerBase {
 	public override toJson(): any {
 		let json = { name: "DMX", roomNodes: [] as any[] };
 		json.roomNodes = this.m_roomNodes.map((roomNode: RoomNodeBase) => roomNode.toJson());
+	
+		return json;
 	}
 
 	public override fromJson(params: any): void {

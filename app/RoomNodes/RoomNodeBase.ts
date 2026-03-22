@@ -82,6 +82,8 @@ export default abstract class RoomNodeBase {
 			if (orientation)
 				msg.orientation = { w: orientation.w, x: orientation.x, y: orientation.y, z: orientation.z };
 
+			this.m_uid = this.m_publisher.createUID();
+			
 			//roomNode is created in this FE and need to be published
 			this.m_publisher.createRoomNode(
 				msg
@@ -261,6 +263,10 @@ export default abstract class RoomNodeBase {
 		return this.getObject3D().quaternion;
 	}
 
+	public getScale(): THREE.Vector3 | undefined{
+		return this.getObject3D().scale;
+	}
+
 	public setLookAt(x: number, y: number, z: number) { this.m_lookAt.value.set(x, y, z); }
 
 	public getLookAt(): THREE.Vector3 { return this.m_lookAt.value; }
@@ -294,6 +300,10 @@ export default abstract class RoomNodeBase {
 		let ori = this.getOrientation();
 		if (ori)
 			json.orientation = { w: ori.w, x: ori.x, y: ori.y, z: ori.z };
+
+		let scale = this.getScale();
+		if(scale)
+			json.scale = {x: scale.x, y:scale.y, z:scale.z};
 
 		let lAt = this.getLookAt();
 		json.lookAt = { x: lAt, y: lAt, z: lAt };

@@ -286,8 +286,8 @@ export default class ActionSpaceRoomNode extends RoomNodeBase {
 		let params = {} as any;
 
 		params.type = this.m_shape;
-		params.size = this.getSize();
 
+		
 		return params;
 	}
 

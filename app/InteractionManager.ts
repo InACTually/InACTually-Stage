@@ -81,7 +81,9 @@ export default class InteractionManager {
 		let action = undefined;
 		if (Action) {
 			action = new Action(this.m_publisher);
+			action.setUID(this.m_publisher.createUID());
 			this.m_actions.push(action);
+			this.getOrCreateInteractionByActionSpace(actionSpace).actions.push(action);
 		}
 		return action;
 	}
@@ -91,7 +93,9 @@ export default class InteractionManager {
 		let Reaction = ReactionRegistry.get(type);
 		if (Reaction) {
 			reaction = new Reaction(this.m_publisher);
+			reaction.setUID(this.m_publisher.createUID());
 			this.m_reactions.push(reaction);
+			this.getOrCreateInteractionByActionSpace(actionSpace).reactions.push(reaction);
 			console.log("[InteractionManger] created reaction", reaction);
  
 		}
@@ -158,17 +162,111 @@ export default class InteractionManager {
 		return interaction;
 	}
 
+	private getOrCreateInteractionByActionSpace(actionSpace: ActionSpaceRoomNode): IInteraction {
+		let interactions = this.m_interactions.get(actionSpace.getUID());
+
+		if (!interactions) {
+			interactions = [] as IInteraction[];
+			this.m_interactions.set(actionSpace.getUID(), interactions);
+		}
+
+		let interaction = interactions[0];
+		if (!interaction) {
+			interaction = this.createInteraction(actionSpace);
+		}
+
+		return interaction;
+	}
+
 	deleteInteractionByUID(uid: string) {
 		this.m_interactions.delete(uid);
 	}
 
 	fromJson(json: any) {
+		this.m_actions.splice(0, this.m_actions.length);
+		this.m_reactions.splice(0, this.m_reactions.length);
+		this.m_interactions.clear();
 
+		if (!json?.interactions) {
+			return;
+		}
+
+		Object.entries(json.interactions).forEach(([actionSpaceUID, interactionEntries]) => {
+			if (!Array.isArray(interactionEntries)) {
+				return;
+			}
+
+			const interactions = [] as IInteraction[];
+
+			interactionEntries.forEach((interactionJson: any) => {
+				const interaction: IInteraction = {
+					uid: interactionJson.uid ?? this.m_publisher.createUID(),
+					actions: [],
+					reactions: [],
+				};
+
+				if (Array.isArray(interactionJson.actions)) {
+					interactionJson.actions.forEach((actionJson: any) => {
+						const Action = ActionRegistry.get(actionJson.type as ActionType);
+						if (!Action) {
+							return;
+						}
+
+						const action = new Action(this.m_publisher);
+						if (actionJson.uid) {
+							action.setUID(actionJson.uid);
+						}
+						action.fromJson(actionJson, false);
+						this.m_actions.push(action);
+						interaction.actions.push(action);
+					});
+				}
+
+				if (Array.isArray(interactionJson.reactions)) {
+					interactionJson.reactions.forEach((reactionJson: any) => {
+						const Reaction = ReactionRegistry.get(reactionJson.type as ReactionType);
+						if (!Reaction) {
+							return;
+						}
+
+						const reaction = new Reaction(this.m_publisher);
+						if (reactionJson.uid) {
+							reaction.setUID(reactionJson.uid);
+						}
+						reaction.fromJson(reactionJson, false);
+						this.m_reactions.push(reaction);
+						interaction.reactions.push(reaction);
+					});
+				}
+
+				interactions.push(interaction);
+			});
+
+			this.m_interactions.set(actionSpaceUID, interactions);
+		});
 	}
 
 	toJson(): any {
+		const interactions: Record<string, any[]> = {};
 
-		return {};
+		 
+		this.m_interactions.forEach((interactionEntries: IInteraction[], actionSpaceUID: string) => {
+			interactions[actionSpaceUID] = interactionEntries.map((interaction: IInteraction) => ({
+				uid: interaction.uid,
+				actions: interaction.actions.map((action: ActionBase) => ({
+					uid: action.getUID(),
+					type: action.getType(),
+					...action.toJson(),
+				})),
+				reactions: interaction.reactions.map((reaction: ReactionBase) => ({
+					uid: reaction.getUID(),
+					type: reaction.getType(),
+					...reaction.toJson(),
+				})),
+			}));
+		});
+
+		return { interactions };
 	}
 
 }

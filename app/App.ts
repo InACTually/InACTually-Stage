@@ -65,4 +65,25 @@ export default class App {
 	public connect() {
 		this.middleware.connect(9001);
 	}
+
+	public saveRoomAsJson() {
+		var roomJson ={
+			roomSetup:this.roomManager.toJson(),
+			interactions: this.interactionManager.toJson()
+		}
+ 
+		const fileContent = JSON.stringify(roomJson, null, 2);
+		const blob = new Blob([fileContent], { type: "application/json" });
+		const downloadUrl = URL.createObjectURL(blob);
+		const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+		const link = document.createElement("a");
+
+		link.href = downloadUrl;
+		link.download = `room-${timestamp}.json`;
+		document.body.appendChild(link);
+		link.click();
+		document.body.removeChild(link);
+
+		URL.revokeObjectURL(downloadUrl);
+	}
 }

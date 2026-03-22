@@ -237,23 +237,11 @@ export default class Stage {
 	public switchProjection() {
 		this.projectionManager.setIsOrthographicProjection(!this.projectionManager.getIsOrthographicProjection());
 	}
-	public async setupGaussianSplatManager(){
-		this.m_gaussianSplatManager = await GaussianSplatManager.create(this.m_renderer!.getRenderer(), this.getScene(),this.projectionManager.getCurrentCamera() )
-	
-		var splat = this.m_gaussianSplatManager.load({
-			id: "stage-environment",
-			url: "/models/Stage_Garnisionskirche_11-03-26_FT_cleaned.ply",
-			position: new THREE.Vector3(0, 0, 0),
-			quaternion: new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0,0,1), Math.PI),
-			scale:1,
-			lod: false,   // Level-of-Detail empfohlen für große Szenen
-		});
-	}
 
 	public async draw(canvas: HTMLElement, drawCB: () => void) {
 		this.m_renderer = new Renderer(canvas);
 
-		await this.setupGaussianSplatManager();
+		await GaussianSplatManager.init(this.m_renderer.getRenderer(), this.getScene(), this.getCamera());
 
 		this.m_renderer.draw(
 			drawCB,
