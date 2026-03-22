@@ -83,7 +83,9 @@ export default class UI3D {
 
 		this.m_transformControls.size = 0.7;
 
-		this.m_roomManager.stage.getScene().add(this.m_transformControls);
+		console.log(this.m_roomManager.stage.getScene())
+		console.log(this.m_transformControls)
+		this.m_roomManager.stage.getScene().add(this.m_transformControls.getHelper());
 		this.m_roomManager.stage.getScene().add(this.m_template3DObjectContainer);
 		this.m_template3DObjectContainer.position.set(0, -100, 0);
 
