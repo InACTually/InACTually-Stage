@@ -3,12 +3,11 @@ import type RoomNodeBase from "../RoomNodeBase";
 import RoomNodeManagerBase from "../RoomNodeManagerBase";
 import * as THREE from "three";
 import { RoomNodeManagerType } from "../RoomNodeRegistry";
-import GaussianSplatRoomNode from "./GaussianSplatRoomNode";
+import ObjectRoomNode from "./ObjectRoomNode";
 import type GaussianSplatManager from "~/app/View3D/GaussianSplatManager.client";
 
 export default class ObjectManager extends RoomNodeManagerBase {
     private m_availableDevices = [] as { deviceName: string }[];
-    private m_gaussianSplatManager = undefined as undefined|GaussianSplatManager;
 
     public override setup(): void {
         this.m_roomNodeMgrType = RoomNodeManagerType.RNM_OBJECT;
@@ -26,7 +25,7 @@ export default class ObjectManager extends RoomNodeManagerBase {
         var object = undefined;
 
         
-        object = new GaussianSplatRoomNode(
+        object = new ObjectRoomNode(
                 this.m_publisher,
             (roomNode: RoomNodeBase) => {
                 this.m_roomNodes.push(roomNode);
@@ -47,7 +46,7 @@ export default class ObjectManager extends RoomNodeManagerBase {
     }
 
     public override getTemplate3DObject(): Promise<THREE.Object3D<THREE.Object3DEventMap>> {
-        return loadModel("/models/input_unidirectional.glb");
+        return loadModel("/models/object.glb");
     }
 
     

@@ -50,6 +50,11 @@
                         :selectedRoomNode="(selectedRoomNode as ActionSpaceRoomNode)">
                     </DynamicRoomNodesActionSpaceDetailsPanel>
       
+                    <DynamicRoomNodesObjectDetailsPanel 
+                        v-if="(selectedRoomNode as RoomNodeBase).getRoomNodeType() === RoomNodeType.RNT_OBJECT" 
+                        :selectedRoomNode="(selectedRoomNode as ObjectRoomNode)">
+                    </DynamicRoomNodesObjectDetailsPanel>
+      
       
                     <CommonPanelRow class="input_row">
                         <h6 @click="deleteRoomNode()">DELETE</h6>
@@ -66,6 +71,7 @@ import { RoomNodeType, fromRoomNodeType } from '~/app/RoomNodes/RoomNodeRegistry
 import  RoomNodeBase from '~/app/RoomNodes/RoomNodeBase';
 import type MovingHeadRoomNode from '~/app/RoomNodes/DMX/MovingHeadRoomNode';
 import type ActionSpaceRoomNode from '~/app/RoomNodes/ActionSpace/ActionSpaceRoomNode';
+import type ObjectRoomNode from '~/app/RoomNodes/Object/ObjectRoomNode';
 
 const props = defineProps({
     selectedRoomNode:{

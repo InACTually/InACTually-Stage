@@ -18,13 +18,14 @@
 import { ColladaLoader } from 'three/examples/jsm/loaders/ColladaLoader.js';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js';
 
 import * as THREE from "three";
 
 
-export default async function loadModel(path: string): Promise<THREE.Object3D> {
+export default async function loadModel(path: string, typeHint?: string): Promise<THREE.Object3D> {
 	let model = undefined;
-	const modelType = path.split(/[. ]+/).pop();
+	const modelType = (typeHint ?? path).split(/[. ]+/).pop()?.toLowerCase();
 	switch (modelType) {
 		case "dae":
 			model = await loadCollada(path);
@@ -32,14 +33,22 @@ export default async function loadModel(path: string): Promise<THREE.Object3D> {
 		case "obj":
 			model = await loadObj(path);
 			break;
+		case "gltf":
 		case "glb":
 			model = await loadGLTF(path);
+			break;
+		case "fbx":
+			model = await loadFBX(path);
 			break;
 	}
 
 	return new Promise<THREE.Object3D>((resolve, reject) => {
-		resolve(model!);
-	})
+		if (!model) {
+			reject(new Error(`Unsupported model type for path: ${typeHint ?? path}`));
+			return;
+		}
+		resolve(model);
+	});
 }
 
 export async function loadImageObject(path: string): Promise<THREE.Object3D> {
@@ -88,3 +97,11 @@ export async function loadObj(path: string): Promise<THREE.Object3D> {
 	})
 }
 
+export async function loadFBX(path: string): Promise<THREE.Object3D> {
+	return new Promise((resolve, reject) => {
+		const loader = new FBXLoader();
+		loader.load(path, (model) => {
+			resolve(model);
+		})
+	})
+}
