@@ -9,7 +9,7 @@
 	Licensed under the MIT License.
 	See LICENSE file in the project root for full license information.
 
-	This file is created and substantially modified: 2024-2025
+	This file is created and substantially modified: 2026
 
 	contributors:
 	Fabian Töpfer - baniaf@uber.space
@@ -30,7 +30,7 @@
             ref="fileInput"
             class="hidden_input"
             type="file"
-            accept=".glb,.gltf,.obj,.dae, .fbx"
+            accept=".glb,.gltf,.obj,.dae, .fbx, .ply, .spz, .sog"
             @change="onFileSelected">
      </CommonPanelRow>
      

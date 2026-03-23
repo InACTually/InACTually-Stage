@@ -21,7 +21,7 @@ import * as TWEEN from "@tweenjs/tween.js";
 import Stats from "three/examples/jsm/libs/stats.module.js";
 import { ShadowMapViewer } from 'three/addons/utils/ShadowMapViewer.js';
 import { XRButton } from 'three/addons/webxr/XRButton.js';
-import GaussianSplatManager from "./GaussianSplatManager.client";
+import GaussianSplatManager from "./GaussianSplatManager";
 
 export default class Renderer {
 

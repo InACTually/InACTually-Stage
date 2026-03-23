@@ -1,10 +1,27 @@
+
+/*
+    InACTually
+    > interactive theater for actual acts
+    > this file is part of the "InACTually Stage", a spatial Interface for orchestrating interactive Media
+
+    Copyright(c) 2023–2025 Fabian Töpfer, Lars Engeln
+    Copyright(c) 2025 InACTually Community
+    Licensed under the MIT License.
+    See LICENSE file in the project root for full license information.
+
+    This file is created and substantially modified: 2026
+
+    contributors:
+    Fabian Töpfer - baniaf@uber.space
+    
+*/
+
 import loadModel from "~/app/Utils/ModelLoader";
 import type RoomNodeBase from "../RoomNodeBase";
 import RoomNodeManagerBase from "../RoomNodeManagerBase";
 import * as THREE from "three";
 import { RoomNodeManagerType } from "../RoomNodeRegistry";
 import ObjectRoomNode from "./ObjectRoomNode";
-import type GaussianSplatManager from "~/app/View3D/GaussianSplatManager.client";
 
 export default class ObjectManager extends RoomNodeManagerBase {
     private m_availableDevices = [] as { deviceName: string }[];

@@ -1,7 +1,19 @@
+
 /*
-	InACTually
-	> interactive theater for actual acts
-	> this file is part of the "InACTually Stage", a spatial Interface for orchestrating interactive Media
+    InACTually
+    > interactive theater for actual acts
+    > this file is part of the "InACTually Stage", a spatial Interface for orchestrating interactive Media
+
+    Copyright(c) 2023–2025 Fabian Töpfer, Lars Engeln
+    Copyright(c) 2025 InACTually Community
+    Licensed under the MIT License.
+    See LICENSE file in the project root for full license information.
+
+    This file is created and substantially modified: 2026
+
+    contributors:
+    Fabian Töpfer - baniaf@uber.space
+    
 */
 
 import * as THREE from "three";
@@ -40,6 +52,7 @@ export interface SplatLoadOptions {
 	scale?: number;
 	opacity?: number;
 	lod?: boolean;
+	addToScene?: boolean;
 	onLoad?: (mesh: SplatMesh) => void;
 }
 
@@ -141,6 +154,7 @@ export default class GaussianSplatManager {
 			scale = 1,
 			opacity = 1,
 			lod = false,
+			addToScene = true,
 			onLoad,
 		} = options;
 
@@ -179,7 +193,10 @@ export default class GaussianSplatManager {
 			this.m_scene.add(this.getSparkRenderer());
 		}
 
-		this.m_scene.add(mesh);
+		if (addToScene) {
+			this.m_scene.add(mesh);
+		}
+
 		this.m_splats.set(id, { id, mesh });
 
 		console.log(`[GaussianSplatManager] Splat queued: ${id} → ${url}`);
@@ -192,7 +209,11 @@ export default class GaussianSplatManager {
 			console.warn(`[GaussianSplatManager] No splat with id "${id}".`);
 			return;
 		}
-		this.m_scene.remove(entry.mesh);
+		entry.mesh.parent?.remove(entry.mesh);
+		entry.mesh.removeFromParent();
+		if ("dispose" in entry.mesh && typeof entry.mesh.dispose === "function") {
+			entry.mesh.dispose();
+		}
 		this.m_splats.delete(id);
 	}
 

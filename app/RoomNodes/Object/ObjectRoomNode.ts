@@ -9,11 +9,11 @@
     Licensed under the MIT License.
     See LICENSE file in the project root for full license information.
 
-    This file is created and substantially modified: 2024-2025
+    This file is created and substantially modified: 2026
 
     contributors:
     Fabian Töpfer - baniaf@uber.space
-    Lars Engeln - mail@lars-engeln.de
+    
 */
 
 import RoomNodeBase from "../RoomNodeBase";
@@ -115,14 +115,28 @@ export default class ObjectRoomNode extends RoomNodeBase {
     public async loadModelFromPath(modelPath: string, typeHint?: string): Promise<void> {
         const resolvedPath = this.resolveModelPath(modelPath);
         const model = await loadModel(resolvedPath, typeHint ?? this.m_modelPath);
-        model.name = "3DPhotoModel";
+        model.name = "Object";
 
-        if (this.m_modelObject) {
-            this.getObject3D().remove(this.m_modelObject);
-        }
+        await this.removeCurrentModelObject();
 
         this.m_modelObject = model;
         this.getObject3D().add(model);
+    }
+
+    private async removeCurrentModelObject(): Promise<void> {
+        if (!this.m_modelObject) {
+            return;
+        }
+
+        const gaussianSplatId = this.m_modelObject.userData?.gaussianSplatId;
+        if (typeof gaussianSplatId === "string" && import.meta.client) {
+            const { default: GaussianSplatManager } = await import("~/app/View3D/GaussianSplatManager");
+            if (GaussianSplatManager.isInitialized()) {
+                GaussianSplatManager.getInstance().remove(gaussianSplatId);
+            }
+        }
+
+        this.getObject3D().remove(this.m_modelObject);
     }
 
     private resolveModelPath(modelPath: string): string {

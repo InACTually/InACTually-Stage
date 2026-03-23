@@ -22,7 +22,7 @@ import RoomModelManager, { ModelMode } from "./RoomModelManager";
 import GridManager, { GridMode } from "./GridManager";
 import ProjectionManager from "./ProjectionManager";
 import { ShadowMapViewer } from 'three/addons/utils/ShadowMapViewer.js';
-import GaussianSplatManager from "./GaussianSplatManager.client";
+import GaussianSplatManager from "./GaussianSplatManager";
 
 export default class Stage {
 	private m_lightColor = new THREE.Color(0xf1f1f1);
